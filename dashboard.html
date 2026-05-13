@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aksara – Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:    #0c1f5e;
+      --blue:    #1a56db;
+      --blue-lt: #3b82f6;
+      --pale:    #bfdbfe;
+      --bg:      #f8f9fc;
+      --card:    #ffffff;
+      --text:    #1e3a5f;
+      --muted:   #7a93b8;
+      --border:  #e8edf5;
+      --white:   #ffffff;
+    }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px;
+      background: var(--white);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 0 32px; gap: 20px;
+    }
+    .nav-brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .nav-logo {
+      width: 36px; height: 36px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      display: flex; align-items: center; justify-content: center;
+    }
+    .nav-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 800; font-size: 18px; color: var(--navy);
+    }
+    .nav-search {
+      flex: 1; max-width: 400px; position: relative; margin-left: 16px;
+    }
+    .nav-search input {
+      width: 100%; padding: 9px 16px 9px 40px;
+      border-radius: 12px; border: 1.5px solid var(--border);
+      background: var(--bg); font-size: 13.5px; color: var(--text);
+      font-family: 'DM Sans', sans-serif; outline: none;
+      transition: all .2s;
+    }
+    .nav-search input:focus { border-color: var(--blue); background: white; box-shadow: 0 0 0 3px rgba(26,86,219,0.08); }
+    .nav-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); }
+    .nav-right { margin-left: auto; display: flex; align-items: center; gap: 12px; }
+    .btn-write {
+      display: flex; align-items: center; gap: 7px;
+      padding: 9px 20px; border-radius: 11px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white; font-size: 13.5px; font-weight: 600;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      text-decoration: none; box-shadow: 0 4px 14px rgba(26,86,219,0.25);
+      transition: all .2s;
+    }
+    .btn-write:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.35); }
+    .user-ava {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, #e8f0fe, #bfdbfe);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 700; color: var(--blue);
+      cursor: pointer; border: 2px solid var(--border);
+      position: relative;
+    }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: white; border: 1px solid var(--border);
+      border-radius: 14px; padding: 8px;
+      box-shadow: 0 8px 32px rgba(12,31,94,0.12);
+      min-width: 200px; display: none; z-index: 200;
+    }
+    .user-dropdown.open { display: block; animation: fadeIn .2s ease; }
+    .dd-header { padding: 10px 12px 12px; border-bottom: 1px solid var(--border); margin-bottom: 6px; }
+    .dd-name { font-weight: 700; font-size: 14px; color: var(--navy); }
+    .dd-email { font-size: 12px; color: var(--muted); }
+    .dd-item {
+      display: flex; align-items: center; gap: 9px;
+      padding: 9px 12px; border-radius: 9px;
+      font-size: 13.5px; color: var(--text); cursor: pointer;
+      transition: background .15s; border: none; background: none;
+      width: 100%; font-family: 'DM Sans', sans-serif; text-align: left;
+    }
+    .dd-item:hover { background: var(--bg); }
+    .dd-item.danger { color: #dc2626; }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; padding-top: 64px; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 220px; flex-shrink: 0;
+      padding: 28px 16px;
+      background: var(--white);
+      border-right: 1px solid var(--border);
+      position: fixed; top: 64px; left: 0; bottom: 0;
+      overflow-y: auto;
+    }
+    .sidebar-section { margin-bottom: 28px; }
+    .sidebar-label {
+      font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px;
+      text-transform: uppercase; color: var(--muted);
+      padding: 0 8px; margin-bottom: 8px;
+    }
+    .sidebar-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 12px; border-radius: 10px;
+      font-size: 13.5px; font-weight: 500; color: var(--text);
+      cursor: pointer; transition: all .15s;
+      border: none; background: none; width: 100%;
+      font-family: 'DM Sans', sans-serif; text-align: left;
+      text-decoration: none;
+    }
+    .sidebar-item:hover { background: var(--bg); color: var(--navy); }
+    .sidebar-item.active {
+      background: #eff6ff; color: var(--blue); font-weight: 600;
+    }
+    .sidebar-item.active svg { color: var(--blue); }
+    .sidebar-item svg { color: var(--muted); flex-shrink: 0; }
+    .genre-list { display: flex; flex-direction: column; gap: 2px; }
+    .genre-item {
+      padding: 7px 12px; border-radius: 8px;
+      font-size: 13px; color: var(--muted); cursor: pointer;
+      transition: all .15s; border: none; background: none;
+      width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .genre-item:hover { background: var(--bg); color: var(--text); }
+
+    /* ── MAIN ── */
+    .main { margin-left: 220px; padding: 32px 36px; flex: 1; min-width: 0; }
+
+    /* ── TABS ── */
+    .tabs-bar {
+      display: flex; align-items: center; gap: 4px;
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 14px; padding: 5px; margin-bottom: 28px;
+      width: fit-content;
+    }
+    .tab-btn {
+      padding: 9px 22px; border-radius: 10px;
+      font-size: 13.5px; font-weight: 600; cursor: pointer;
+      border: none; background: transparent; font-family: 'DM Sans', sans-serif;
+      color: var(--muted); transition: all .2s;
+    }
+    .tab-btn.active { background: var(--navy); color: white; box-shadow: 0 2px 10px rgba(12,31,94,0.15); }
+
+    /* ── SECTION HEADER ── */
+    .sec-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .sec-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700; font-size: 20px; color: var(--navy);
+    }
+    .sec-sub { font-size: 13.5px; color: var(--muted); margin-top: 2px; }
+    .see-all { font-size: 13px; font-weight: 600; color: var(--blue); cursor: pointer; text-decoration: none; }
+
+    /* ── STORY GRID ── */
+    .stories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(168px, 1fr));
+      gap: 20px; margin-bottom: 40px;
+    }
+    .story-card {
+      background: var(--white); border-radius: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden; cursor: pointer;
+      transition: all .25s;
+      box-shadow: 0 1px 4px rgba(12,31,94,0.04);
+    }
+    .story-card:hover { transform: translateY(-4px); box-shadow: 0 12px 30px rgba(12,31,94,0.1); border-color: var(--pale); }
+    .story-cover {
+      width: 100%; aspect-ratio: 2/3; object-fit: cover;
+      display: block;
+    }
+    .story-cover-ph {
+      width: 100%; aspect-ratio: 2/3;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 8px;
+      font-size: 11px; font-weight: 600; letter-spacing: 1px;
+      text-transform: uppercase; color: rgba(255,255,255,0.7);
+    }
+    .story-info { padding: 12px 13px 14px; }
+    .story-genre-tag {
+      display: inline-block; padding: 2px 9px; border-radius: 99px;
+      font-size: 10px; font-weight: 700; letter-spacing: .5px;
+      text-transform: uppercase; margin-bottom: 5px;
+      background: #eff6ff; color: var(--blue);
+    }
+    .story-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13.5px; font-weight: 600; color: var(--navy);
+      line-height: 1.35; margin-bottom: 3px;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .story-author { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; }
+    .story-meta { display: flex; gap: 10px; font-size: 11px; color: var(--muted); }
+    .story-meta span { display: flex; align-items: center; gap: 3px; }
+
+    /* ── MY WORKS CARD (larger) ── */
+    .my-stories-grid {
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px; margin-bottom: 32px;
+    }
+    .my-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 16px; padding: 16px;
+      display: flex; gap: 16px; cursor: pointer;
+      transition: all .25s; box-shadow: 0 1px 4px rgba(12,31,94,0.04);
+    }
+    .my-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(12,31,94,0.08); border-color: var(--pale); }
+    .my-card-cover {
+      width: 70px; height: 100px; border-radius: 8px;
+      object-fit: cover; flex-shrink: 0;
+    }
+    .my-card-cover-ph {
+      width: 70px; height: 100px; border-radius: 8px;
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+    }
+    .my-card-body { flex: 1; min-width: 0; }
+    .my-card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 14px; font-weight: 700; color: var(--navy); margin-bottom: 4px;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .my-card-genre { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .my-card-synopsis {
+      font-size: 12.5px; color: var(--muted); line-height: 1.55;
+      display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+      margin-bottom: 10px;
+    }
+    .my-card-foot { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge {
+      padding: 3px 10px; border-radius: 99px; font-size: 11px; font-weight: 600;
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .badge-pub { background: #dcfce7; color: #15803d; }
+    .badge-draft { background: #fef9c3; color: #a16207; }
+    .badge-chapter { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .my-card-actions { display: flex; gap: 6px; margin-top: 8px; }
+    .btn-sm {
+      padding: 5px 14px; border-radius: 8px; font-size: 12px; font-weight: 600;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      display: inline-flex; align-items: center; gap: 5px; transition: all .15s;
+    }
+    .btn-edit { background: #eff6ff; color: var(--blue); }
+    .btn-edit:hover { background: #dbeafe; }
+    .btn-read { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
+    .btn-read:hover { background: white; }
+    .btn-del { background: #fff1f2; color: #dc2626; }
+    .btn-del:hover { background: #fee2e2; }
+
+    /* ── EMPTY STATE ── */
+    .empty {
+      text-align: center; padding: 60px 24px;
+      display: flex; flex-direction: column; align-items: center; gap: 16px;
+    }
+    .empty-icon {
+      width: 72px; height: 72px; border-radius: 20px;
+      background: linear-gradient(135deg, #e8f0fe, #dbeafe);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .empty-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 18px; font-weight: 700; color: var(--navy);
+    }
+    .empty-sub { font-size: 14px; color: var(--muted); max-width: 300px; line-height: 1.6; }
+    .btn-primary {
+      padding: 11px 28px; border-radius: 12px;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white; font-size: 14px; font-weight: 600;
+      border: none; cursor: pointer; font-family: 'DM Sans', sans-serif;
+      text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+      box-shadow: 0 4px 14px rgba(26,86,219,0.25); transition: all .2s;
+    }
+    .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.35); }
+
+    /* ── LOADING ── */
+    .loading { text-align: center; padding: 48px; color: var(--muted); font-size: 14px; }
+    .spinner-sm {
+      width: 28px; height: 28px; border-radius: 50%;
+      border: 3px solid var(--border); border-top-color: var(--blue);
+      animation: spin .7s linear infinite; margin: 0 auto 12px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-6px)} to{opacity:1;transform:none} }
+
+    /* ── MODAL KONFIRMASI ── */
+    .modal-overlay {
+      position: fixed; inset: 0; z-index: 500;
+      background: rgba(12,31,94,0.3); backdrop-filter: blur(4px);
+      display: flex; align-items: center; justify-content: center; padding: 24px;
+      opacity: 0; pointer-events: none; transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+    .modal {
+      background: white; border-radius: 20px; padding: 32px;
+      max-width: 400px; width: 100%;
+      box-shadow: 0 24px 60px rgba(12,31,94,0.2);
+      transform: scale(.95); transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: scale(1); }
+    .modal-title { font-family: 'Poppins', sans-serif; font-size: 17px; font-weight: 700; color: var(--navy); margin-bottom: 8px; }
+    .modal-body { font-size: 13.5px; color: var(--muted); line-height: 1.6; margin-bottom: 24px; }
+    .modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+    .btn-cancel { padding: 10px 22px; border-radius: 10px; border: 1.5px solid var(--border); background: white; color: var(--text); font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .btn-cancel:hover { background: var(--bg); }
+    .btn-danger { padding: 10px 22px; border-radius: 10px; border: none; background: #dc2626; color: white; font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .btn-danger:hover { background: #b91c1c; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      z-index: 9999; border-radius: 14px;
+      padding: 11px 22px; font-size: 13.5px; font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+      opacity: 0; transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none; white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+    #toast.green { background: linear-gradient(135deg,#059669,#16a34a); color: white; }
+    #toast.red { background: linear-gradient(135deg,#dc2626,#ef4444); color: white; }
+    #toast.blue { background: linear-gradient(135deg,#1a56db,#2563eb); color: white; }
+
+    @media (max-width: 768px) {
+      .sidebar { display: none; }
+      .main { margin-left: 0; padding: 24px 16px; }
+      .stories-grid { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+      .my-stories-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 0 16px; }
+      .nav-search { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <a class="nav-brand" href="index.html">
+    <div class="nav-logo">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+      </svg>
+    </div>
+    <span class="nav-title">Aksara</span>
+  </a>
+  <div class="nav-search">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input type="text" id="search-input" placeholder="Cari judul atau penulis..." oninput="handleSearch(this.value)" />
+  </div>
+  <div class="nav-right">
+    <a href="tulis.html" class="btn-write">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+      Tulis Cerita
+    </a>
+    <div class="user-ava" id="user-ava" onclick="toggleDropdown()">
+      <span id="ava-initial">?</span>
+      <div class="user-dropdown" id="user-dropdown">
+        <div class="dd-header">
+          <div class="dd-name" id="dd-name">–</div>
+          <div class="dd-email" id="dd-email">–</div>
+        </div>
+        <button class="dd-item" onclick="switchTab('karyaku')">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Karya Saya
+        </button>
+        <button class="dd-item danger" id="btn-logout">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+          Keluar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Menu</div>
+      <button class="sidebar-item active" id="sb-jelajahi" onclick="switchTab('jelajahi')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        Jelajahi
+      </button>
+      <button class="sidebar-item" id="sb-karyaku" onclick="switchTab('karyaku')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+        Karya Saya
+      </button>
+      <button class="sidebar-item" id="sb-tersimpan" onclick="switchTab('tersimpan')">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        Tersimpan
+      </button>
+    </div>
+    <div class="sidebar-section">
+      <div class="sidebar-label">Genre</div>
+      <div class="genre-list">
+        <button class="genre-item" onclick="filterGenre('')">📚 Semua</button>
+        <button class="genre-item" onclick="filterGenre('Romansa')">❤️ Romansa</button>
+        <button class="genre-item" onclick="filterGenre('Fantasi')">✨ Fantasi</button>
+        <button class="genre-item" onclick="filterGenre('Thriller')">🔪 Thriller</button>
+        <button class="genre-item" onclick="filterGenre('Petualangan')">🏔️ Petualangan</button>
+        <button class="genre-item" onclick="filterGenre('Horror')">👻 Horror</button>
+        <button class="genre-item" onclick="filterGenre('Drama')">🎭 Drama</button>
+        <button class="genre-item" onclick="filterGenre('Komedi')">😄 Komedi</button>
+        <button class="genre-item" onclick="filterGenre('Misteri')">🔍 Misteri</button>
+        <button class="genre-item" onclick="filterGenre('Sci-Fi')">🚀 Sci-Fi</button>
+        <button class="genre-item" onclick="filterGenre('Slice of Life')">🌸 Slice of Life</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main" id="main-content">
+    <div class="loading" id="loading-state">
+      <div class="spinner-sm"></div>
+      Memuat cerita...
+    </div>
+  </main>
+</div>
+
+<!-- Modal Konfirmasi Hapus -->
+<div class="modal-overlay" id="delete-modal">
+  <div class="modal">
+    <div class="modal-title">Hapus Cerita?</div>
+    <div class="modal-body">Cerita <strong id="del-title"></strong> beserta semua babnya akan dihapus permanen dan tidak bisa dikembalikan.</div>
+    <div class="modal-actions">
+      <button class="btn-cancel" onclick="closeDeleteModal()">Batal</button>
+      <button class="btn-danger" id="confirm-del">Ya, Hapus</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, query, orderByChild, limitToLast, set, remove, update }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBtbU3Kqn9sobpsamwdyANsYJlZ6dY2vng",
+  authDomain: "finansial-c925d.firebaseapp.com",
+  databaseURL: "https://finansial-c925d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "finansial-c925d",
+  storageBucket: "finansial-c925d.firebasestorage.app",
+  messagingSenderId: "617456294586",
+  appId: "1:617456294586:web:41b0e172c86899b6c54083"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let currentUser = null;
+let allStories  = [];
+let activeTab   = 'jelajahi';
+let activeGenre = '';
+let deleteTarget = null;
+
+// ── Helpers ──
+function toast(msg, type='blue', dur=3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = ''; }, dur);
+}
+
+function coverColors(genre) {
+  const map = {
+    'Romansa':['#ffe4e6','#fca5a5'],
+    'Fantasi':['#f3e8ff','#c4b5fd'],
+    'Thriller':['#1e293b','#334155'],
+    'Horror':['#0f172a','#1e293b'],
+    'Petualangan':['#ecfdf5','#6ee7b7'],
+    'Drama':['#fef3c7','#fcd34d'],
+    'Komedi':['#fff7ed','#fdba74'],
+    'Misteri':['#1e1b4b','#3730a3'],
+    'Sci-Fi':['#0c4a6e','#0369a1'],
+    'Slice of Life':['#f0fdf4','#86efac'],
+  };
+  return map[genre] || ['#e8edf5','#bfdbfe'];
+}
+function genreEmoji(genre) {
+  const m = {'Romansa':'❤️','Fantasi':'✨','Thriller':'🔪','Horror':'👻','Petualangan':'🏔️','Drama':'🎭','Komedi':'😄','Misteri':'🔍','Sci-Fi':'🚀','Slice of Life':'🌸'};
+  return m[genre] || '📖';
+}
+
+function buildCover(s, cls='story-cover') {
+  if (s.cover) return `<img class="${cls}" src="${s.cover}" alt="${s.title}" onerror="this.style.display='none'">`;
+  const [c1,c2] = coverColors(s.genre);
+  if (cls === 'my-card-cover-ph') {
+    return `<div class="my-card-cover-ph" style="background:linear-gradient(135deg,${c1},${c2})">${genreEmoji(s.genre)}</div>`;
+  }
+  return `<div class="story-cover-ph" style="background:linear-gradient(135deg,${c1},${c2})">
+    <span style="font-size:36px">${genreEmoji(s.genre)}</span>
+    <span style="font-size:10px;font-weight:700;letter-spacing:1px;color:rgba(0,0,0,.35);text-transform:uppercase">${s.genre||'Cerita'}</span>
+  </div>`;
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'auth.html'; return; }
+  currentUser = user;
+  const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+  document.getElementById('ava-initial').textContent = initial;
+  document.getElementById('dd-name').textContent  = user.displayName || 'Pengguna';
+  document.getElementById('dd-email').textContent = user.email || '';
+
+  await loadStories();
+  renderTab();
+});
+
+document.getElementById('btn-logout').addEventListener('click', async () => {
+  await signOut(auth);
+  window.location.href = 'auth.html';
+});
+
+// ── Load all published stories ──
+async function loadStories() {
+  try {
+    const snap = await get(ref(db, 'stories'));
+    allStories = [];
+    if (snap.exists()) {
+      snap.forEach(child => {
+        const s = child.val();
+        if (s.published) allStories.push(s);
+      });
+      // sort newest first
+      allStories.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    }
+  } catch(e) { console.error(e); }
+}
+
+async function loadMyStories() {
+  try {
+    const snap = await get(ref(db, 'stories'));
+    const mine = [];
+    if (snap.exists()) {
+      snap.forEach(child => {
+        const s = child.val();
+        if (s.authorId === currentUser.uid) mine.push(s);
+      });
+    }
+    mine.sort((a,b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return mine;
+  } catch(e) { console.error(e); return []; }
+}
+
+async function loadBookmarks() {
+  try {
+    const snap = await get(ref(db, `users/${currentUser.uid}/bookmarks`));
+    if (!snap.exists()) return [];
+    const ids = Object.keys(snap.val());
+    const stories = [];
+    for (const id of ids) {
+      const s = await get(ref(db, `stories/${id}`));
+      if (s.exists()) stories.push(s.val());
+    }
+    return stories;
+  } catch(e) { return []; }
+}
+
+// ── RENDER ──
+function renderTab() {
+  document.getElementById('loading-state') && document.getElementById('main-content').querySelector('#loading-state')?.remove();
+  const main = document.getElementById('main-content');
+
+  ['jelajahi','karyaku','tersimpan'].forEach(t => {
+    document.getElementById('sb-'+t)?.classList.remove('active');
+  });
+  document.getElementById('sb-'+activeTab)?.classList.add('active');
+
+  if (activeTab === 'jelajahi') renderJelajahi(main);
+  else if (activeTab === 'karyaku') renderKaryaku(main);
+  else renderTersimpan(main);
+}
+
+function renderJelajahi(main) {
+  let filtered = allStories;
+  if (activeGenre) filtered = allStories.filter(s => s.genre === activeGenre);
+  const q = document.getElementById('search-input')?.value.trim().toLowerCase();
+  if (q) filtered = filtered.filter(s => s.title.toLowerCase().includes(q) || (s.authorName||'').toLowerCase().includes(q));
+
+  main.innerHTML = `
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">${activeGenre ? genreEmoji(activeGenre)+' '+activeGenre : '🔍 Jelajahi Cerita'}</div>
+        <div class="sec-sub">${filtered.length} cerita ditemukan</div>
+      </div>
+    </div>
+    ${filtered.length === 0 ? `
+      <div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+        <div class="empty-title">Belum ada cerita</div>
+        <div class="empty-sub">Jadilah yang pertama menerbitkan cerita di genre ini!</div>
+        <a href="tulis.html" class="btn-primary">✏️ Tulis Sekarang</a>
+      </div>` : `
+    <div class="stories-grid">
+      ${filtered.map(s => `
+        <div class="story-card" onclick="baca('${s.id}')">
+          ${buildCover(s)}
+          <div class="story-info">
+            <span class="story-genre-tag">${s.genre||'Umum'}</span>
+            <div class="story-title">${s.title}</div>
+            <div class="story-author">oleh ${s.authorName||'Anonim'}</div>
+            <div class="story-meta">
+              <span>📖 ${s.chapterCount||0} bab</span>
+              <span>❤️ ${s.likes||0}</span>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`}`;
+}
+
+async function renderKaryaku(main) {
+  main.innerHTML = `<div class="loading"><div class="spinner-sm"></div>Memuat karya...</div>`;
+  const mine = await loadMyStories();
+  main.innerHTML = `
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">✏️ Karya Saya</div>
+        <div class="sec-sub">${mine.length} cerita</div>
+      </div>
+      <a href="tulis.html" class="btn-primary">+ Cerita Baru</a>
+    </div>
+    ${mine.length === 0 ? `
+      <div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></div>
+        <div class="empty-title">Belum ada karya</div>
+        <div class="empty-sub">Wujudkan imajinasimu. Tulis cerita pertamamu sekarang!</div>
+        <a href="tulis.html" class="btn-primary">✏️ Mulai Menulis</a>
+      </div>` : `
+    <div class="my-stories-grid">
+      ${mine.map(s => `
+        <div class="my-card">
+          ${buildCover(s, 'my-card-cover-ph')}
+          <div class="my-card-body">
+            <div class="my-card-title">${s.title}</div>
+            <div class="my-card-genre">${genreEmoji(s.genre)} ${s.genre||'Umum'}</div>
+            <div class="my-card-synopsis">${s.synopsis||'Tidak ada sinopsis.'}</div>
+            <div class="my-card-foot">
+              <span class="badge ${s.published?'badge-pub':'badge-draft'}">${s.published?'✓ Terbit':'📝 Draft'}</span>
+              <span class="badge badge-chapter">📖 ${s.chapterCount||0} bab</span>
+            </div>
+            <div class="my-card-actions">
+              <button class="btn-sm btn-edit" onclick="event.stopPropagation();editStory('${s.id}')">✏️ Edit</button>
+              <button class="btn-sm btn-read" onclick="event.stopPropagation();baca('${s.id}')">👁️ Baca</button>
+              ${!s.published ? `<button class="btn-sm btn-edit" onclick="event.stopPropagation();publishStory('${s.id}','${encodeURIComponent(s.title)}')">🚀 Terbit</button>` : `<button class="btn-sm btn-del" onclick="event.stopPropagation();unpublishStory('${s.id}')">🔒 Tarik</button>`}
+              <button class="btn-sm btn-del" onclick="event.stopPropagation();openDeleteModal('${s.id}','${encodeURIComponent(s.title)}')">🗑️</button>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`}`;
+}
+
+async function renderTersimpan(main) {
+  main.innerHTML = `<div class="loading"><div class="spinner-sm"></div>Memuat...</div>`;
+  const saved = await loadBookmarks();
+  main.innerHTML = `
+    <div class="sec-header">
+      <div>
+        <div class="sec-title">🔖 Tersimpan</div>
+        <div class="sec-sub">${saved.length} cerita tersimpan</div>
+      </div>
+    </div>
+    ${saved.length === 0 ? `
+      <div class="empty">
+        <div class="empty-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#1a56db" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></div>
+        <div class="empty-title">Belum ada yang disimpan</div>
+        <div class="empty-sub">Simpan cerita favoritmu agar mudah ditemukan kembali.</div>
+        <button class="btn-primary" onclick="switchTab('jelajahi')">🔍 Jelajahi Cerita</button>
+      </div>` : `
+    <div class="stories-grid">
+      ${saved.map(s => `
+        <div class="story-card" onclick="baca('${s.id}')">
+          ${buildCover(s)}
+          <div class="story-info">
+            <span class="story-genre-tag">${s.genre||'Umum'}</span>
+            <div class="story-title">${s.title}</div>
+            <div class="story-author">oleh ${s.authorName||'Anonim'}</div>
+            <div class="story-meta"><span>📖 ${s.chapterCount||0} bab</span><span>❤️ ${s.likes||0}</span></div>
+          </div>
+        </div>`).join('')}
+    </div>`}`;
+}
+
+// ── Actions ──
+window.switchTab = (tab) => {
+  activeTab = tab;
+  renderTab();
+};
+
+window.filterGenre = (genre) => {
+  activeGenre = genre;
+  activeTab = 'jelajahi';
+  renderTab();
+};
+
+window.handleSearch = (val) => {
+  if (activeTab !== 'jelajahi') { activeTab = 'jelajahi'; }
+  renderTab();
+};
+
+window.baca = (id) => {
+  window.location.href = `baca.html?id=${id}`;
+};
+
+window.editStory = (id) => {
+  window.location.href = `tulis.html?id=${id}`;
+};
+
+window.publishStory = async (id, encodedTitle) => {
+  const title = decodeURIComponent(encodedTitle);
+  try {
+    await update(ref(db, `stories/${id}`), { published: true, updatedAt: new Date().toISOString() });
+    toast(`🚀 "${title}" berhasil diterbitkan!`, 'green');
+    await loadStories();
+    renderKaryaku(document.getElementById('main-content'));
+  } catch(e) { toast('Gagal menerbitkan', 'red'); }
+};
+
+window.unpublishStory = async (id) => {
+  try {
+    await update(ref(db, `stories/${id}`), { published: false, updatedAt: new Date().toISOString() });
+    toast('Cerita ditarik ke Draft', 'blue');
+    await loadStories();
+    renderKaryaku(document.getElementById('main-content'));
+  } catch(e) { toast('Gagal menarik cerita', 'red'); }
+};
+
+window.openDeleteModal = (id, encodedTitle) => {
+  deleteTarget = id;
+  document.getElementById('del-title').textContent = decodeURIComponent(encodedTitle);
+  document.getElementById('delete-modal').classList.add('open');
+};
+
+window.closeDeleteModal = () => {
+  document.getElementById('delete-modal').classList.remove('open');
+  deleteTarget = null;
+};
+
+document.getElementById('confirm-del').addEventListener('click', async () => {
+  if (!deleteTarget) return;
+  try {
+    await remove(ref(db, `stories/${deleteTarget}`));
+    await remove(ref(db, `users/${currentUser.uid}/stories/${deleteTarget}`));
+    toast('Cerita berhasil dihapus', 'red');
+    closeDeleteModal();
+    await loadStories();
+    renderKaryaku(document.getElementById('main-content'));
+  } catch(e) { toast('Gagal menghapus', 'red'); }
+});
+
+window.toggleDropdown = () => {
+  document.getElementById('user-dropdown').classList.toggle('open');
+};
+
+document.addEventListener('click', (e) => {
+  if (!document.getElementById('user-ava').contains(e.target)) {
+    document.getElementById('user-dropdown').classList.remove('open');
+  }
+});
+</script>
+</body>
+</html>
