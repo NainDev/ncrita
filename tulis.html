@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aksara – Tulis Cerita</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy:  #0c1f5e; --blue: #1a56db; --blue-lt: #3b82f6;
+      --pale:  #bfdbfe; --bg: #f8f9fc; --card: #ffffff;
+      --text:  #1e3a5f; --muted: #7a93b8; --border: #e8edf5; --white: #ffffff;
+    }
+    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+    /* ── NAVBAR ── */
+    .navbar {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      height: 64px; background: var(--white); border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; padding: 0 32px; gap: 16px;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      font-size: 13.5px; font-weight: 600; color: var(--muted);
+      text-decoration: none; border: 1.5px solid var(--border);
+      padding: 7px 14px; border-radius: 10px; transition: all .2s;
+    }
+    .nav-back:hover { color: var(--navy); border-color: var(--pale); background: #f0f7ff; }
+    .nav-title-area { flex: 1; }
+    .nav-story-title {
+      font-family: 'Poppins', sans-serif;
+      font-weight: 700; font-size: 16px; color: var(--navy);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 340px;
+    }
+    .nav-story-sub { font-size: 11.5px; color: var(--muted); }
+    .nav-actions { display: flex; gap: 10px; align-items: center; }
+    .btn-save {
+      padding: 9px 22px; border-radius: 11px; border: none;
+      background: linear-gradient(135deg, var(--navy), var(--blue));
+      color: white; font-size: 13.5px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      box-shadow: 0 4px 14px rgba(26,86,219,0.25); transition: all .2s;
+      display: flex; align-items: center; gap: 7px;
+    }
+    .btn-save:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.35); }
+    .btn-save:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-outline {
+      padding: 9px 18px; border-radius: 11px;
+      border: 1.5px solid var(--border); background: white;
+      color: var(--text); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .btn-outline:hover { border-color: var(--pale); background: #f0f7ff; color: var(--blue); }
+
+    /* ── LAYOUT ── */
+    .layout { display: flex; padding-top: 64px; min-height: 100vh; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 280px; flex-shrink: 0;
+      background: var(--white); border-right: 1px solid var(--border);
+      position: fixed; top: 64px; left: 0; bottom: 0;
+      display: flex; flex-direction: column;
+    }
+    .sidebar-header {
+      padding: 20px 20px 14px; border-bottom: 1px solid var(--border);
+    }
+    .sidebar-heading {
+      font-family: 'Poppins', sans-serif;
+      font-size: 13px; font-weight: 700; color: var(--navy);
+      margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between;
+    }
+    .btn-add-chapter {
+      display: flex; align-items: center; gap: 6px; width: 100%;
+      padding: 10px 14px; border-radius: 10px;
+      border: 1.5px dashed var(--pale); background: #f0f7ff;
+      color: var(--blue); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'DM Sans', sans-serif;
+      transition: all .2s;
+    }
+    .btn-add-chapter:hover { background: #dbeafe; border-color: var(--blue); }
+    .chapters-list { flex: 1; overflow-y: auto; padding: 12px; }
+    .chapter-item {
+      padding: 12px 14px; border-radius: 11px; cursor: pointer;
+      transition: all .15s; margin-bottom: 4px;
+      border: 1.5px solid transparent;
+    }
+    .chapter-item:hover { background: var(--bg); }
+    .chapter-item.active { background: #eff6ff; border-color: var(--pale); }
+    .ch-num { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 3px; }
+    .ch-title { font-size: 13.5px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ch-actions { display: flex; gap: 4px; margin-top: 6px; }
+    .ch-btn {
+      padding: 3px 9px; border-radius: 6px; border: none;
+      font-size: 11px; font-weight: 600; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .15s;
+    }
+    .ch-btn-del { background: #fff1f2; color: #dc2626; }
+    .ch-btn-del:hover { background: #fee2e2; }
+
+    /* ── MAIN EDITOR ── */
+    .editor-area { margin-left: 280px; padding: 36px 48px; flex: 1; min-width: 0; max-width: 920px; }
+
+    /* Info cerita panel */
+    .section-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 18px; padding: 28px 32px; margin-bottom: 24px;
+      box-shadow: 0 1px 6px rgba(12,31,94,0.04);
+    }
+    .section-card-title {
+      font-family: 'Poppins', sans-serif;
+      font-size: 15px; font-weight: 700; color: var(--navy);
+      margin-bottom: 20px; display: flex; align-items: center; gap: 8px;
+    }
+    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+    .field-full { grid-column: 1 / -1; }
+
+    .fg { display: flex; flex-direction: column; }
+    .lbl {
+      font-size: 12.5px; font-weight: 600; color: var(--text);
+      margin-bottom: 6px; display: block;
+    }
+    .inp, .sel, .ta {
+      width: 100%; border-radius: 11px;
+      border: 1.5px solid var(--border);
+      padding: 11px 15px; background: var(--bg);
+      font-size: 13.5px; color: var(--text);
+      outline: none; transition: all .2s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .inp:focus, .sel:focus, .ta:focus {
+      border-color: var(--blue); background: white;
+      box-shadow: 0 0 0 3px rgba(26,86,219,0.08);
+    }
+    .sel { cursor: pointer; }
+    .ta { resize: vertical; line-height: 1.65; }
+    .ta-lg { min-height: 320px; font-size: 14.5px; line-height: 1.8; }
+
+    /* Cover preview */
+    .cover-preview-wrap {
+      display: flex; gap: 20px; align-items: flex-start;
+    }
+    .cover-preview {
+      width: 100px; height: 150px; border-radius: 10px;
+      border: 1.5px solid var(--border); overflow: hidden;
+      background: linear-gradient(135deg,#e8edf5,#bfdbfe);
+      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+    }
+    .cover-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .cover-input-area { flex: 1; }
+    .cover-hint { font-size: 11.5px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+
+    /* Illustration */
+    .illus-preview {
+      width: 100%; max-height: 220px; border-radius: 10px;
+      object-fit: cover; border: 1px solid var(--border); display: none; margin-bottom: 10px;
+    }
+    .illus-preview.show { display: block; }
+
+    /* Chapter editor */
+    .chapter-editor { display: none; }
+    .chapter-editor.active { display: block; }
+    .story-info-panel { display: block; }
+
+    /* Publish toggle */
+    .publish-row {
+      display: flex; align-items: center; justify-content: space-between;
+      background: #f0fdf4; border: 1.5px solid #bbf7d0;
+      border-radius: 14px; padding: 16px 20px; margin-bottom: 24px;
+    }
+    .publish-row.unpublished { background: #fefce8; border-color: #fde68a; }
+    .pub-info {}
+    .pub-title { font-weight: 700; font-size: 14px; color: var(--navy); }
+    .pub-sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    .toggle-btn {
+      padding: 9px 22px; border-radius: 10px; border: none;
+      font-size: 13px; font-weight: 700; cursor: pointer;
+      font-family: 'DM Sans', sans-serif; transition: all .2s;
+    }
+    .toggle-pub { background: #16a34a; color: white; }
+    .toggle-pub:hover { background: #15803d; }
+    .toggle-unpub { background: #f59e0b; color: white; }
+    .toggle-unpub:hover { background: #d97706; }
+
+    /* Status bar */
+    .status-bar {
+      position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+      background: white; border: 1px solid var(--border);
+      border-radius: 14px; padding: 10px 20px;
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted); font-weight: 500;
+      box-shadow: 0 4px 20px rgba(12,31,94,0.08);
+      z-index: 50; transition: all .3s; opacity: 0; pointer-events: none;
+    }
+    .status-bar.show { opacity: 1; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #22c55e; }
+    .status-dot.saving { background: #f59e0b; animation: pulse 1s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+    /* Toast */
+    #toast {
+      position: fixed; bottom: 28px; right: 28px; z-index: 9999;
+      border-radius: 14px; padding: 11px 22px;
+      font-size: 13.5px; font-weight: 600;
+      box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+      opacity: 0; transform: translateY(20px);
+      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+    #toast.green { background: linear-gradient(135deg,#059669,#16a34a); color: white; }
+    #toast.red   { background: linear-gradient(135deg,#dc2626,#ef4444); color: white; }
+    #toast.blue  { background: linear-gradient(135deg,#1a56db,#2563eb); color: white; }
+
+    /* Spinner */
+    .spinner { width: 15px; height: 15px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: white; border-radius: 50%; animation: spin .7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .msg {
+      border-radius: 12px; padding: 10px 14px;
+      font-size: 13px; font-weight: 500; margin-bottom: 16px; display: none; line-height: 1.5;
+    }
+    .msg.err { background: #fee2e2; color: #dc2626; display: block; border: 1px solid #fecaca; }
+    .msg.ok  { background: #eff6ff; color: #1d4ed8; display: block; border: 1px solid #bfdbfe; }
+
+    @media (max-width: 768px) {
+      .editor-area { margin-left: 0; padding: 20px 16px; }
+      .sidebar { display: none; }
+      .field-grid { grid-template-columns: 1fr; }
+      .navbar { padding: 0 16px; }
+      .nav-story-title { max-width: 160px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+  <a class="nav-back" href="dashboard.html">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    Dashboard
+  </a>
+  <div class="nav-title-area">
+    <div class="nav-story-title" id="nav-story-title">Cerita Baru</div>
+    <div class="nav-story-sub" id="nav-story-sub">Draft · belum diterbitkan</div>
+  </div>
+  <div class="nav-actions">
+    <button class="btn-outline" onclick="saveDraft()">Simpan Draft</button>
+    <button class="btn-save" id="btn-publish" onclick="togglePublish()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/></svg>
+      <span id="pub-btn-text">Terbitkan</span>
+    </button>
+  </div>
+</div>
+
+<div class="layout">
+  <!-- SIDEBAR (chapter list) -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-heading">
+        Daftar Bab
+        <span id="chapter-count-badge" style="font-size:11px;font-weight:600;background:#eff6ff;color:var(--blue);padding:2px 8px;border-radius:99px;">0 bab</span>
+      </div>
+      <button class="btn-add-chapter" onclick="newChapter()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Tambah Bab Baru
+      </button>
+    </div>
+    <div class="chapters-list" id="chapters-list">
+      <div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">
+        Belum ada bab.<br>Klik "+ Tambah Bab Baru"
+      </div>
+    </div>
+  </aside>
+
+  <!-- EDITOR -->
+  <div class="editor-area">
+    <div id="msg-global" class="msg"></div>
+
+    <!-- STORY INFO PANEL -->
+    <div id="story-info-panel">
+      <!-- Publish Status -->
+      <div class="publish-row unpublished" id="publish-row">
+        <div class="pub-info">
+          <div class="pub-title" id="pub-status-title">📝 Draft – Belum Diterbitkan</div>
+          <div class="pub-sub" id="pub-status-sub">Lengkapi info cerita dan tambahkan minimal 1 bab, lalu terbitkan.</div>
+        </div>
+        <button class="toggle-btn toggle-pub" id="pub-toggle-btn" onclick="togglePublish()">🚀 Terbitkan</button>
+      </div>
+
+      <!-- Info Cerita -->
+      <div class="section-card">
+        <div class="section-card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+          Informasi Cerita
+        </div>
+        <div class="field-grid">
+          <div class="fg field-full">
+            <label class="lbl">Judul Cerita *</label>
+            <input type="text" id="f-title" class="inp" placeholder="Contoh: Hujan di Kota Lama" oninput="autoSaveTitle()" />
+          </div>
+          <div class="fg">
+            <label class="lbl">Genre *</label>
+            <select id="f-genre" class="sel">
+              <option value="">-- Pilih Genre --</option>
+              <option>Romansa</option><option>Fantasi</option><option>Thriller</option>
+              <option>Petualangan</option><option>Horror</option><option>Drama</option>
+              <option>Komedi</option><option>Misteri</option><option>Sci-Fi</option>
+              <option>Slice of Life</option><option>Sejarah</option><option>Lainnya</option>
+            </select>
+          </div>
+          <div class="fg">
+            <label class="lbl">Status Penulisan</label>
+            <select id="f-status" class="sel">
+              <option value="ongoing">Sedang Berjalan</option>
+              <option value="completed">Selesai</option>
+              <option value="hiatus">Hiatus</option>
+            </select>
+          </div>
+          <div class="fg field-full">
+            <label class="lbl">Sinopsis *</label>
+            <textarea id="f-synopsis" class="ta" rows="4" placeholder="Tuliskan ringkasan ceritamu yang menarik... (min. 50 karakter)"></textarea>
+          </div>
+          <!-- Cover -->
+          <div class="fg field-full">
+            <label class="lbl">Sampul Cerita (URL Gambar)</label>
+            <div class="cover-preview-wrap">
+              <div class="cover-preview" id="cover-preview-box">
+                <span>📖</span>
+              </div>
+              <div class="cover-input-area">
+                <input type="url" id="f-cover" class="inp" placeholder="https://example.com/gambar.jpg" oninput="previewCover(this.value)" />
+                <div class="cover-hint">Paste URL gambar dari internet. Disarankan rasio 2:3 (portrait) seperti 400×600px.</div>
+              </div>
+            </div>
+          </div>
+          <div class="fg field-full">
+            <label class="lbl">Tag / Kata Kunci</label>
+            <input type="text" id="f-tags" class="inp" placeholder="cinta, kampus, drama (pisahkan dengan koma)" />
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:12px;justify-content:flex-end;margin-bottom:32px">
+        <button class="btn-outline" onclick="saveDraft()">💾 Simpan Info Cerita</button>
+        <button class="btn-save" onclick="newChapter()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Tambah Bab Pertama
+        </button>
+      </div>
+    </div>
+
+    <!-- CHAPTER EDITOR PANEL -->
+    <div id="chapter-panel" class="chapter-editor">
+      <div class="section-card">
+        <div class="section-card-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--blue)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+          <span id="chapter-panel-title">Bab 1</span>
+        </div>
+
+        <div class="field-grid">
+          <div class="fg field-full">
+            <label class="lbl">Judul Bab *</label>
+            <input type="text" id="ch-title" class="inp" placeholder="Contoh: Pertemuan Pertama" />
+          </div>
+          <div class="fg field-full">
+            <label class="lbl">Ilustrasi Bab (URL Gambar – opsional)</label>
+            <img id="illus-preview" class="illus-preview" alt="ilustrasi" />
+            <input type="url" id="ch-illus" class="inp" placeholder="https://example.com/ilustrasi.jpg" oninput="previewIllus(this.value)" />
+          </div>
+          <div class="fg field-full">
+            <label class="lbl">Isi Cerita *</label>
+            <textarea id="ch-content" class="ta ta-lg" placeholder="Tulis isi babmu di sini...
+
+Tips menulis yang baik:
+• Gunakan paragraf yang rapi
+• Gambarkan suasana dengan detail
+• Bangun karakter yang kuat
+• Buat pembaca penasaran di setiap bab"></textarea>
+            <div style="display:flex;justify-content:space-between;margin-top:6px;">
+              <span style="font-size:11.5px;color:var(--muted)" id="word-count">0 kata</span>
+              <span style="font-size:11.5px;color:var(--muted)">Tekan Ctrl+S untuk simpan</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:10px;justify-content:space-between;align-items:center;margin-top:8px;padding-top:20px;border-top:1px solid var(--border)">
+          <button class="btn-outline" onclick="backToStoryInfo()">← Info Cerita</button>
+          <div style="display:flex;gap:10px">
+            <button class="btn-outline" onclick="saveChapter()">💾 Simpan Bab</button>
+            <button class="btn-save" id="btn-save-next" onclick="saveChapterAndNew()">
+              Simpan & Bab Baru →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="status-bar" id="status-bar">
+  <div class="status-dot" id="status-dot"></div>
+  <span id="status-text">Tersimpan</span>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, set, get, remove, update, push, serverTimestamp }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBtbU3Kqn9sobpsamwdyANsYJlZ6dY2vng",
+  authDomain: "finansial-c925d.firebaseapp.com",
+  databaseURL: "https://finansial-c925d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "finansial-c925d",
+  storageBucket: "finansial-c925d.firebasestorage.app",
+  messagingSenderId: "617456294586",
+  appId: "1:617456294586:web:41b0e172c86899b6c54083"
+};
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getDatabase(app);
+
+let currentUser = null;
+let storyId     = null;
+let storyData   = null;
+let chapters    = [];
+let activeChapterIdx = -1;
+
+const params = new URLSearchParams(location.search);
+const editId = params.get('id');
+
+// ── Toast & Status ──
+function toast(msg, type='blue', dur=3500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + type;
+  clearTimeout(t._tid);
+  t._tid = setTimeout(() => { t.className = ''; }, dur);
+}
+function setStatus(msg, saving=false) {
+  const bar = document.getElementById('status-bar');
+  const dot = document.getElementById('status-dot');
+  document.getElementById('status-text').textContent = msg;
+  dot.className = 'status-dot' + (saving ? ' saving' : '');
+  bar.classList.add('show');
+  clearTimeout(bar._tid);
+  if (!saving) bar._tid = setTimeout(() => bar.classList.remove('show'), 3000);
+}
+function showMsg(txt, type='err') {
+  const el = document.getElementById('msg-global');
+  el.textContent = txt; el.className = 'msg ' + type;
+  setTimeout(() => { el.className = 'msg'; }, 5000);
+}
+
+// ── Auth ──
+onAuthStateChanged(auth, async user => {
+  if (!user) { window.location.href = 'auth.html'; return; }
+  currentUser = user;
+  if (editId) {
+    storyId = editId;
+    await loadStory();
+  } else {
+    initNewStory();
+  }
+});
+
+function initNewStory() {
+  storyId = push(ref(db, 'stories')).key;
+  storyData = {
+    id: storyId,
+    title: 'Cerita Baru',
+    synopsis: '',
+    cover: '',
+    genre: '',
+    status: 'ongoing',
+    tags: '',
+    authorId: currentUser.uid,
+    authorName: currentUser.displayName || currentUser.email,
+    published: false,
+    chapterCount: 0,
+    likes: 0,
+    views: 0,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  };
+  updateNavTitle();
+  updatePublishRow();
+}
+
+async function loadStory() {
+  try {
+    const snap = await get(ref(db, `stories/${storyId}`));
+    if (!snap.exists()) { initNewStory(); return; }
+    storyData = snap.val();
+    // populate form
+    document.getElementById('f-title').value    = storyData.title || '';
+    document.getElementById('f-genre').value    = storyData.genre || '';
+    document.getElementById('f-status').value   = storyData.status || 'ongoing';
+    document.getElementById('f-synopsis').value = storyData.synopsis || '';
+    document.getElementById('f-cover').value    = storyData.cover || '';
+    document.getElementById('f-tags').value     = storyData.tags || '';
+    if (storyData.cover) previewCover(storyData.cover);
+    // load chapters
+    const chapSnap = await get(ref(db, `stories/${storyId}/chapters`));
+    chapters = [];
+    if (chapSnap.exists()) {
+      chapSnap.forEach(c => chapters.push(c.val()));
+      chapters.sort((a,b) => a.order - b.order);
+    }
+    updateNavTitle();
+    updatePublishRow();
+    renderChapterList();
+  } catch(e) { console.error(e); toast('Gagal memuat cerita', 'red'); }
+}
+
+function updateNavTitle() {
+  document.getElementById('nav-story-title').textContent = storyData?.title || 'Cerita Baru';
+  const pub = storyData?.published;
+  document.getElementById('nav-story-sub').textContent = pub ? '✓ Sudah Diterbitkan' : 'Draft · belum diterbitkan';
+  document.getElementById('pub-btn-text').textContent = pub ? 'Tarik Terbit' : 'Terbitkan';
+}
+
+function updatePublishRow() {
+  const pub = storyData?.published;
+  const row = document.getElementById('publish-row');
+  row.className = 'publish-row ' + (pub ? '' : 'unpublished');
+  document.getElementById('pub-status-title').textContent = pub ? '✅ Sudah Diterbitkan – Publik' : '📝 Draft – Belum Diterbitkan';
+  document.getElementById('pub-status-sub').textContent  = pub
+    ? 'Ceritamu sudah bisa dibaca oleh semua pengguna.'
+    : 'Lengkapi info cerita dan tambahkan minimal 1 bab, lalu terbitkan.';
+  const btn = document.getElementById('pub-toggle-btn');
+  btn.className = 'toggle-btn ' + (pub ? 'toggle-unpub' : 'toggle-pub');
+  btn.textContent = pub ? '🔒 Tarik ke Draft' : '🚀 Terbitkan';
+}
+
+// ── Save Story Info ──
+window.saveDraft = async () => {
+  const title    = document.getElementById('f-title').value.trim();
+  const genre    = document.getElementById('f-genre').value;
+  const synopsis = document.getElementById('f-synopsis').value.trim();
+  const cover    = document.getElementById('f-cover').value.trim();
+  const status   = document.getElementById('f-status').value;
+  const tags     = document.getElementById('f-tags').value.trim();
+
+  if (!title) { showMsg('Judul cerita wajib diisi!'); return; }
+  if (!genre) { showMsg('Pilih genre cerita!'); return; }
+  if (synopsis.length < 10) { showMsg('Sinopsis terlalu singkat!'); return; }
+
+  setStatus('Menyimpan...', true);
+  try {
+    const now = new Date().toISOString();
+    Object.assign(storyData, { title, genre, synopsis, cover, status, tags, updatedAt: now });
+    storyData.chapterCount = chapters.length;
+    await set(ref(db, `stories/${storyId}`), storyData);
+    await set(ref(db, `users/${currentUser.uid}/stories/${storyId}`), true);
+    updateNavTitle();
+    updatePublishRow();
+    setStatus('Tersimpan ✓');
+    toast('✅ Info cerita tersimpan!', 'green');
+  } catch(e) { setStatus('Gagal menyimpan'); toast('Gagal menyimpan', 'red'); }
+};
+
+window.autoSaveTitle = () => {
+  const t = document.getElementById('f-title').value;
+  document.getElementById('nav-story-title').textContent = t || 'Cerita Baru';
+};
+
+// ── Publish Toggle ──
+window.togglePublish = async () => {
+  const title    = document.getElementById('f-title').value.trim();
+  const genre    = document.getElementById('f-genre').value;
+  const synopsis = document.getElementById('f-synopsis').value.trim();
+
+  if (!storyData) return;
+  if (!storyData.published) {
+    if (!title || !genre || synopsis.length < 10) { showMsg('Lengkapi Judul, Genre, dan Sinopsis dulu!'); return; }
+    if (chapters.length === 0) { showMsg('Tambahkan minimal 1 bab sebelum menerbitkan!'); return; }
+  }
+
+  try {
+    await saveDraft();
+    const newState = !storyData.published;
+    storyData.published = newState;
+    await update(ref(db, `stories/${storyId}`), { published: newState, updatedAt: new Date().toISOString() });
+    updateNavTitle(); updatePublishRow();
+    toast(newState ? '🚀 Cerita berhasil diterbitkan!' : '🔒 Cerita ditarik ke Draft', newState ? 'green' : 'blue');
+  } catch(e) { toast('Gagal mengubah status', 'red'); }
+};
+
+// ── Chapter Logic ──
+window.newChapter = () => {
+  activeChapterIdx = -1;
+  document.getElementById('ch-title').value   = '';
+  document.getElementById('ch-content').value = '';
+  document.getElementById('ch-illus').value   = '';
+  document.getElementById('illus-preview').classList.remove('show');
+  document.getElementById('chapter-panel-title').textContent = `Bab ${chapters.length + 1} – Baru`;
+  document.getElementById('story-info-panel').style.display = 'none';
+  document.getElementById('chapter-panel').classList.add('active');
+  updateWordCount();
+};
+
+window.editChapter = (idx) => {
+  activeChapterIdx = idx;
+  const ch = chapters[idx];
+  document.getElementById('ch-title').value   = ch.title || '';
+  document.getElementById('ch-content').value = ch.content || '';
+  document.getElementById('ch-illus').value   = ch.illustration || '';
+  previewIllus(ch.illustration || '');
+  document.getElementById('chapter-panel-title').textContent = `Bab ${idx+1} – ${ch.title||'Tanpa Judul'}`;
+  document.getElementById('story-info-panel').style.display = 'none';
+  document.getElementById('chapter-panel').classList.add('active');
+  updateWordCount();
+  // highlight
+  document.querySelectorAll('.chapter-item').forEach((el,i) => el.classList.toggle('active', i===idx));
+};
+
+window.backToStoryInfo = () => {
+  document.getElementById('story-info-panel').style.display = 'block';
+  document.getElementById('chapter-panel').classList.remove('active');
+  document.querySelectorAll('.chapter-item').forEach(el => el.classList.remove('active'));
+};
+
+window.saveChapter = async () => {
+  const chTitle   = document.getElementById('ch-title').value.trim();
+  const chContent = document.getElementById('ch-content').value.trim();
+  const chIllus   = document.getElementById('ch-illus').value.trim();
+
+  if (!chTitle)   { toast('Judul bab wajib diisi!', 'red'); return; }
+  if (chContent.length < 20) { toast('Isi bab terlalu singkat!', 'red'); return; }
+
+  // ensure story info saved first
+  const title    = document.getElementById('f-title').value.trim();
+  const genre    = document.getElementById('f-genre').value;
+  const synopsis = document.getElementById('f-synopsis').value.trim();
+  if (!title || !genre) {
+    toast('Lengkapi info cerita (judul & genre) dulu!', 'red');
+    backToStoryInfo(); return;
+  }
+
+  setStatus('Menyimpan bab...', true);
+  try {
+    const now = new Date().toISOString();
+    let chId, order;
+    if (activeChapterIdx >= 0) {
+      const existing = chapters[activeChapterIdx];
+      chId  = existing.id;
+      order = existing.order;
+      chapters[activeChapterIdx] = { id: chId, title: chTitle, content: chContent, illustration: chIllus, order, updatedAt: now };
+    } else {
+      chId  = push(ref(db, `stories/${storyId}/chapters`)).key;
+      order = chapters.length;
+      chapters.push({ id: chId, title: chTitle, content: chContent, illustration: chIllus, order, createdAt: now, updatedAt: now });
+      activeChapterIdx = chapters.length - 1;
+    }
+    // Save chapter
+    await set(ref(db, `stories/${storyId}/chapters/${chId}`), chapters[activeChapterIdx]);
+    // Save story info + chapter count
+    if (!storyData.title) storyData.title = title;
+    Object.assign(storyData, { title, genre, synopsis, cover: document.getElementById('f-cover').value.trim(), status: document.getElementById('f-status').value, tags: document.getElementById('f-tags').value.trim(), chapterCount: chapters.length, updatedAt: now });
+    await set(ref(db, `stories/${storyId}`), storyData);
+    await set(ref(db, `users/${currentUser.uid}/stories/${storyId}`), true);
+
+    document.getElementById('chapter-panel-title').textContent = `Bab ${activeChapterIdx+1} – ${chTitle}`;
+    renderChapterList();
+    updateNavTitle();
+    document.getElementById('chapter-count-badge').textContent = `${chapters.length} bab`;
+    setStatus('Bab tersimpan ✓');
+    toast('✅ Bab berhasil disimpan!', 'green');
+  } catch(e) { console.error(e); setStatus('Gagal'); toast('Gagal menyimpan bab', 'red'); }
+};
+
+window.saveChapterAndNew = async () => {
+  await saveChapter();
+  window.newChapter();
+};
+
+window.deleteChapter = async (idx) => {
+  if (!confirm(`Hapus Bab ${idx+1}?`)) return;
+  const ch = chapters[idx];
+  try {
+    await remove(ref(db, `stories/${storyId}/chapters/${ch.id}`));
+    chapters.splice(idx, 1);
+    // reorder
+    for (let i = 0; i < chapters.length; i++) {
+      chapters[i].order = i;
+      await update(ref(db, `stories/${storyId}/chapters/${chapters[i].id}`), { order: i });
+    }
+    await update(ref(db, `stories/${storyId}`), { chapterCount: chapters.length });
+    storyData.chapterCount = chapters.length;
+    renderChapterList();
+    document.getElementById('chapter-count-badge').textContent = `${chapters.length} bab`;
+    backToStoryInfo();
+    toast('Bab dihapus', 'blue');
+  } catch(e) { toast('Gagal menghapus bab', 'red'); }
+};
+
+function renderChapterList() {
+  const list = document.getElementById('chapters-list');
+  document.getElementById('chapter-count-badge').textContent = `${chapters.length} bab`;
+  if (chapters.length === 0) {
+    list.innerHTML = `<div style="padding:20px;text-align:center;font-size:13px;color:var(--muted);">Belum ada bab.<br>Klik "+ Tambah Bab Baru"</div>`;
+    return;
+  }
+  list.innerHTML = chapters.map((ch, i) => `
+    <div class="chapter-item ${i === activeChapterIdx ? 'active' : ''}" onclick="editChapter(${i})">
+      <div class="ch-num">Bab ${i+1}</div>
+      <div class="ch-title">${ch.title || 'Tanpa Judul'}</div>
+      <div class="ch-actions">
+        <button class="ch-btn ch-btn-del" onclick="event.stopPropagation();deleteChapter(${i})">🗑️ Hapus</button>
+      </div>
+    </div>`).join('');
+}
+
+// ── Previews ──
+window.previewCover = (url) => {
+  const box = document.getElementById('cover-preview-box');
+  if (url) {
+    box.innerHTML = `<img src="${url}" alt="cover" onerror="this.parentNode.innerHTML='<span>⚠️</span>'">`;
+  } else {
+    box.innerHTML = '<span>📖</span>';
+  }
+};
+
+window.previewIllus = (url) => {
+  const img = document.getElementById('illus-preview');
+  if (url) { img.src = url; img.classList.add('show'); img.onerror = () => img.classList.remove('show'); }
+  else { img.classList.remove('show'); }
+};
+
+// ── Word count ──
+window.updateWordCount = () => {
+  const text = document.getElementById('ch-content').value;
+  const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  document.getElementById('word-count').textContent = `${words} kata`;
+};
+document.getElementById('ch-content')?.addEventListener('input', updateWordCount);
+
+// ── Keyboard shortcut ──
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+    e.preventDefault();
+    const chPanel = document.getElementById('chapter-panel');
+    if (chPanel.classList.contains('active')) saveChapter();
+    else saveDraft();
+  }
+});
+</script>
+</body>
+</html>
