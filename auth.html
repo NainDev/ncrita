@@ -19,6 +19,26 @@
       --white:     #ffffff;
     }
     html { min-height: 100%; }
+
+    /* ── AUTH CHECK LOADING SCREEN ── */
+    #auth-checking {
+      position: fixed; inset: 0; z-index: 9999;
+      background: linear-gradient(145deg, #0c1f5e 0%, #1a4fd8 45%, #3b82f6 100%);
+      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 16px;
+    }
+    #auth-checking .ring {
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.2);
+      border-top-color: white;
+      animation: spin .7s linear infinite;
+    }
+    #auth-checking p { font-family: 'DM Sans',sans-serif; color: rgba(255,255,255,0.7); font-size: 14px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Card awalnya disembunyikan */
+    .card { opacity: 0; pointer-events: none; transition: opacity .3s; }
+    .card.ready { opacity: 1; pointer-events: all; }
+
     body {
       font-family: 'DM Sans', sans-serif;
       background: linear-gradient(145deg, #0c1f5e 0%, #1a4fd8 45%, #3b82f6 100%);
@@ -196,6 +216,13 @@
   </style>
 </head>
 <body>
+
+<!-- Loading screen saat cek auth - hilang setelah Firebase konfirmasi user tidak login -->
+<div id="auth-checking">
+  <div class="ring"></div>
+  <p>Memeriksa sesi...</p>
+</div>
+
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
@@ -493,8 +520,19 @@ async function saveProfil(user, nama) {
 }
 
 let authListenerActive = true;
+
+// Cek auth saat pertama load - HANYA tampilkan form jika belum login
 onAuthStateChanged(auth, user => {
-  if (user && authListenerActive) window.location.href = 'dashboard.html';
+  const overlay = document.getElementById('auth-checking');
+  const card    = document.querySelector('.card');
+  if (user && authListenerActive) {
+    // Sudah login → redirect langsung, jangan tampilkan form sama sekali
+    window.location.replace('dashboard.html');
+    return;
+  }
+  // Belum login → sembunyikan loading, tampilkan form
+  if (overlay) overlay.style.display = 'none';
+  if (card)    card.classList.add('ready');
 });
 
 window.switchTab = (tab) => {
