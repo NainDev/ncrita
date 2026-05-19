@@ -1,572 +1,367 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aksara – Baca</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Aksara – Membaca</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700;800&family=DM+Sans:wght@300;400;500;600&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet"/>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --navy:   #0c1f5e; --blue: #1a56db; --blue-lt: #3b82f6;
-      --pale:   #bfdbfe; --bg: #f8f9fc; --card: #ffffff;
-      --text:   #1e3a5f; --muted: #7a93b8; --border: #e8edf5; --white: #ffffff;
-    }
-    body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
-
-    /* ── NAVBAR ── */
-    .navbar {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      height: 64px; background: var(--white); border-bottom: 1px solid var(--border);
-      display: flex; align-items: center; padding: 0 32px; gap: 16px;
-    }
-    .nav-back {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 13.5px; font-weight: 600; color: var(--muted);
-      text-decoration: none; border: 1.5px solid var(--border);
-      padding: 7px 14px; border-radius: 10px; transition: all .2s;
-    }
-    .nav-back:hover { color: var(--navy); border-color: var(--pale); background: #f0f7ff; }
-    .nav-center { flex: 1; text-align: center; }
-    .nav-story-name {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 700; font-size: 15px; color: var(--navy);
-    }
-    .nav-chapter-name { font-size: 11.5px; color: var(--muted); }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-    .btn-icon {
-      width: 38px; height: 38px; border-radius: 10px;
-      border: 1.5px solid var(--border); background: white;
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: var(--muted); transition: all .2s; position: relative;
-    }
-    .btn-icon:hover { border-color: var(--pale); color: var(--blue); background: #f0f7ff; }
-    .btn-icon.active { border-color: var(--blue); color: var(--blue); background: #eff6ff; }
-
-    /* ── LAYOUT ── */
-    .layout { display: flex; padding-top: 64px; min-height: 100vh; }
-
-    /* ── LEFT: Story Info ── */
-    .story-sidebar {
-      width: 260px; flex-shrink: 0;
-      position: fixed; top: 64px; left: 0; bottom: 0;
-      background: var(--white); border-right: 1px solid var(--border);
-      overflow-y: auto; padding: 20px 16px;
-    }
-
-    /* Cover + info */
-    .story-cover-wrap { text-align: center; padding: 8px 0 16px; }
-    .story-cover-img {
-      width: 120px; height: 180px; border-radius: 12px;
-      object-fit: cover; border: 1px solid var(--border);
-      box-shadow: 0 4px 20px rgba(12,31,94,0.12);
-    }
-    .story-cover-ph {
-      width: 120px; height: 180px; border-radius: 12px;
-      display: inline-flex; align-items: center; justify-content: center;
-      font-size: 44px;
-      box-shadow: 0 4px 20px rgba(12,31,94,0.12);
-    }
-    .story-name {
-      font-family: 'Poppins', sans-serif;
-      font-weight: 700; font-size: 14px; color: var(--navy); margin: 12px 0 2px;
-      line-height: 1.35;
-    }
-    .story-author-name { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
-    .story-badges { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; margin-bottom: 12px; }
-    .badge-sm {
-      padding: 2px 10px; border-radius: 99px; font-size: 10.5px; font-weight: 700;
-    }
-    .badge-genre { background: #eff6ff; color: var(--blue); }
-    .badge-status-ongoing  { background: #fef9c3; color: #a16207; }
-    .badge-status-completed{ background: #dcfce7; color: #15803d; }
-    .badge-status-hiatus   { background: #f1f5f9; color: #64748b; }
-    .story-synopsis-box {
-      background: var(--bg); border-radius: 10px; padding: 12px;
-      font-size: 12.5px; color: var(--muted); line-height: 1.65;
-      margin-bottom: 16px;
-    }
-    .story-actions-bar {
-      display: flex; gap: 8px; justify-content: center; margin-bottom: 16px;
-    }
-    .btn-action {
-      flex: 1; padding: 9px 10px; border-radius: 10px;
-      border: 1.5px solid var(--border); background: white;
-      font-size: 12.5px; font-weight: 600; cursor: pointer;
-      font-family: 'DM Sans', sans-serif; transition: all .2s;
-      display: flex; align-items: center; justify-content: center; gap: 5px;
-    }
-    .btn-action:hover { border-color: var(--pale); background: #f0f7ff; color: var(--blue); }
-    .btn-action.liked   { border-color: #fca5a5; background: #fff1f2; color: #dc2626; }
-    .btn-action.saved   { border-color: var(--pale); background: #eff6ff; color: var(--blue); }
-
-    /* chapter nav in sidebar */
-    .chapter-nav-label {
-      font-size: 10.5px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase;
-      color: var(--muted); margin-bottom: 8px; padding: 0 4px;
-    }
-    .chapter-nav-item {
-      padding: 9px 12px; border-radius: 10px; cursor: pointer;
-      transition: all .15s; margin-bottom: 2px; display: flex; align-items: center; gap: 8px;
-    }
-    .chapter-nav-item:hover { background: var(--bg); }
-    .chapter-nav-item.active { background: #eff6ff; }
-    .ch-nav-num { font-size: 10.5px; font-weight: 700; color: var(--muted); flex-shrink: 0; }
-    .ch-nav-title { font-size: 13px; font-weight: 600; color: var(--navy); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .chapter-nav-item.active .ch-nav-title { color: var(--blue); }
-
-    /* ── READER ── */
-    .reader { margin-left: 260px; padding: 40px; flex: 1; max-width: 1100px; }
-    .reader-inner { max-width: 680px; margin: 0 auto; }
-
-    /* Loading / empty */
-    .loading-state { text-align: center; padding: 80px 24px; color: var(--muted); }
-    .loading-spinner { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--border); border-top-color: var(--blue); animation: spin .7s linear infinite; margin: 0 auto 14px; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* Chapter content */
-    .chapter-header {
-      margin-bottom: 36px; padding-bottom: 24px; border-bottom: 1px solid var(--border);
-    }
-    .chapter-num-label {
-      font-size: 11.5px; font-weight: 700; letter-spacing: 1.5px;
-      text-transform: uppercase; color: var(--blue); margin-bottom: 8px;
-    }
-    .chapter-big-title {
-      font-family: 'Poppins', sans-serif;
-      font-size: clamp(22px, 3vw, 32px); font-weight: 800;
-      color: var(--navy); line-height: 1.2; margin-bottom: 16px;
-    }
-    .chapter-meta-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
-    .chapter-meta-item { font-size: 12.5px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
-
-    /* Illustration */
-    .chapter-illustration {
-      width: 100%; max-height: 380px; object-fit: cover;
-      border-radius: 16px; margin-bottom: 32px;
-      box-shadow: 0 4px 24px rgba(12,31,94,0.1);
-    }
-
-    /* Story text */
-    .story-text {
-      font-family: 'Lora', serif;
-      font-size: 17px; line-height: 1.95; color: #2d3e5a;
-      letter-spacing: 0.01em;
-    }
-    .story-text p {
-      margin-bottom: 1.6em;
-    }
-
-    /* Chapter footer nav */
-    .chapter-footer {
-      margin-top: 56px; padding-top: 28px;
-      border-top: 1px solid var(--border);
-      display: flex; justify-content: space-between; align-items: center; gap: 16px;
-    }
-    .btn-ch-nav {
-      display: flex; align-items: center; gap: 8px;
-      padding: 12px 24px; border-radius: 12px;
-      border: 1.5px solid var(--border); background: white;
-      font-size: 13.5px; font-weight: 600; color: var(--text);
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      transition: all .2s; text-decoration: none;
-    }
-    .btn-ch-nav:hover { border-color: var(--pale); background: #f0f7ff; color: var(--blue); }
-    .btn-ch-nav:disabled { opacity: .4; cursor: not-allowed; }
-    .btn-ch-nav.primary { background: linear-gradient(135deg, var(--navy), var(--blue)); color: white; border-color: transparent; box-shadow: 0 4px 14px rgba(26,86,219,0.25); }
-    .btn-ch-nav.primary:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,86,219,0.35); }
-
-    /* Reading progress bar */
-    .progress-bar {
-      position: fixed; top: 64px; left: 260px; right: 0; height: 3px;
-      background: var(--border); z-index: 90;
-    }
-    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-lt)); width: 0; transition: width .1s; }
-
-    /* No chapter selected */
-    .pick-chapter {
-      text-align: center; padding: 80px 24px;
-      display: flex; flex-direction: column; align-items: center; gap: 16px;
-    }
-    .pick-icon { font-size: 52px; }
-    .pick-title { font-family: 'Poppins', sans-serif; font-size: 20px; font-weight: 700; color: var(--navy); }
-    .pick-sub { font-size: 14px; color: var(--muted); max-width: 300px; line-height: 1.6; }
-
-    /* Toast */
-    #toast {
-      position: fixed; bottom: 24px; right: 24px; z-index: 9999;
-      border-radius: 13px; padding: 10px 20px;
-      font-size: 13.5px; font-weight: 600;
-      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
-      opacity: 0; transform: translateY(16px);
-      transition: all .3s cubic-bezier(.34,1.56,.64,1); pointer-events: none;
-    }
-    #toast.show { opacity: 1; transform: translateY(0); }
-    #toast.green { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
-    #toast.blue  { background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; }
-    #toast.red   { background: #fee2e2; color: #dc2626; border: 1px solid #fecaca; }
-
-    @media (max-width: 900px) {
-      .story-sidebar { display: none; }
-      .reader { margin-left: 0; padding: 24px 20px; }
-      .progress-bar { left: 0; }
-    }
-    @media (max-width: 600px) {
-      .navbar { padding: 0 16px; }
-      .nav-center { display: none; }
-    }
-
-    /* ── PAGE GUARD: loading sampai auth dikonfirmasi ── */
-    #page-guard {
-      position: fixed; inset: 0; z-index: 9999;
-      background: #f8f9fc;
-      display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 14px;
-    }
-    #page-guard .guard-logo {
-      width: 52px; height: 52px; border-radius: 16px;
-      background: linear-gradient(135deg, #0c1f5e, #1a56db);
-      display: flex; align-items: center; justify-content: center;
-      margin-bottom: 4px;
-    }
-    #page-guard .guard-ring {
-      width: 36px; height: 36px; border-radius: 50%;
-      border: 3px solid #e8edf5; border-top-color: #1a56db;
-      animation: guardSpin .7s linear infinite;
-    }
-    #page-guard p { font-family: 'DM Sans',sans-serif; color: #7a93b8; font-size: 13.5px; }
-    @keyframes guardSpin { to { transform: rotate(360deg); } }
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+    :root{--navy:#0c1f5e;--blue:#1a56db;--pale:#bfdbfe;--bg:#f8f9fc;--text:#1e3a5f;--muted:#7a93b8;--border:#e8edf5;--white:#fff;}
+    #page-guard{position:fixed;inset:0;z-index:9999;background:var(--bg);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+    .g-logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#0c1f5e,#1a56db);display:flex;align-items:center;justify-content:center;}
+    .g-ring{width:36px;height:36px;border-radius:50%;border:3px solid #e8edf5;border-top-color:#1a56db;animation:spin .7s linear infinite;}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    #page-guard p{font-family:'DM Sans',sans-serif;color:#7a93b8;font-size:13.5px;}
+    body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+    /* NAVBAR */
+    .navbar{position:fixed;top:0;left:0;right:0;z-index:100;height:64px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 28px;gap:14px;}
+    .nav-back{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;color:var(--muted);text-decoration:none;border:1.5px solid var(--border);padding:7px 13px;border-radius:10px;transition:all .2s;white-space:nowrap;flex-shrink:0;}
+    .nav-back:hover{color:var(--navy);border-color:var(--pale);background:#f0f7ff;}
+    .nav-center{flex:1;text-align:center;min-width:0;padding:0 8px;}
+    .nav-ttl{font-family:'Poppins',sans-serif;font-weight:700;font-size:14px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .nav-ch{font-size:11px;color:var(--muted);}
+    .nav-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+    .icon-btn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--border);background:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--muted);transition:all .2s;}
+    .icon-btn:hover{border-color:var(--pale);color:var(--blue);background:#f0f7ff;}
+    .icon-btn.liked{border-color:#fca5a5;color:#dc2626;background:#fff1f2;}
+    .icon-btn.saved{border-color:var(--pale);color:var(--blue);background:#eff6ff;}
+    /* PROGRESS */
+    .prog-bar{position:fixed;top:64px;left:0;right:0;height:3px;background:var(--border);z-index:90;}
+    .prog-fill{height:100%;background:linear-gradient(90deg,var(--blue),#3b82f6);width:0;transition:width .15s;}
+    /* LAYOUT */
+    .layout{display:flex;padding-top:64px;min-height:100vh;}
+    /* SIDEBAR */
+    .sidebar{width:260px;flex-shrink:0;background:#fff;border-right:1px solid var(--border);position:fixed;top:64px;left:0;bottom:0;overflow-y:auto;display:flex;flex-direction:column;}
+    .sb-cover-area{padding:20px 20px 0;text-align:center;flex-shrink:0;}
+    .sb-cover-img{width:110px;height:165px;border-radius:12px;object-fit:cover;border:1px solid var(--border);box-shadow:0 4px 16px rgba(12,31,94,.1);display:block;margin:0 auto;}
+    .sb-cover-ph{width:110px;height:165px;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 4px 16px rgba(12,31,94,.1);}
+    .sb-title{font-family:'Poppins',sans-serif;font-weight:700;font-size:13.5px;color:var(--navy);margin:12px 16px 2px;line-height:1.35;}
+    .sb-author{font-size:12px;color:var(--muted);margin:0 16px 10px;}
+    .sb-badges{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;padding:0 16px;margin-bottom:12px;}
+    .badge{padding:2px 10px;border-radius:99px;font-size:10.5px;font-weight:700;}
+    .bg{background:#eff6ff;color:var(--blue);}
+    .bo{background:#fef9c3;color:#a16207;}
+    .bc{background:#dcfce7;color:#15803d;}
+    .bh{background:#f1f5f9;color:#64748b;}
+    .sb-syn{background:var(--bg);border-radius:10px;padding:11px 13px;font-size:12px;color:var(--muted);line-height:1.65;margin:0 16px 12px;}
+    .sb-act{display:flex;gap:8px;padding:0 16px;margin-bottom:12px;}
+    .act{flex:1;padding:9px 8px;border-radius:10px;border:1.5px solid var(--border);background:#fff;font-size:12px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;}
+    .act:hover{border-color:var(--pale);background:#f0f7ff;color:var(--blue);}
+    .act.liked{border-color:#fca5a5;background:#fff1f2;color:#dc2626;}
+    .act.saved{border-color:var(--pale);background:#eff6ff;color:var(--blue);}
+    .sb-div{height:1px;background:var(--border);margin:0 16px 12px;}
+    .sb-ch-label{font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);padding:0 18px;margin-bottom:8px;}
+    .sb-ch-list{padding:0 10px 20px;flex:1;overflow-y:auto;}
+    .sb-ch-item{padding:9px 12px;border-radius:10px;cursor:pointer;transition:all .15s;margin-bottom:2px;display:flex;align-items:center;gap:8px;}
+    .sb-ch-item:hover{background:var(--bg);}
+    .sb-ch-item.active{background:#eff6ff;}
+    .sb-ch-n{font-size:10px;font-weight:700;color:var(--muted);flex-shrink:0;min-width:24px;}
+    .sb-ch-t{font-size:13px;font-weight:600;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .sb-ch-item.active .sb-ch-t{color:var(--blue);}
+    /* READER */
+    .reader{margin-left:260px;flex:1;min-width:0;padding:40px 48px;}
+    .reader-inner{max-width:680px;margin:0 auto;}
+    /* States */
+    .state-box{min-height:60vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;text-align:center;padding:40px;}
+    .state-icon{font-size:56px;}
+    .state-title{font-family:'Poppins',sans-serif;font-size:20px;font-weight:700;color:var(--navy);}
+    .state-sub{font-size:14px;color:var(--muted);max-width:320px;line-height:1.6;}
+    .btn-primary{padding:11px 28px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;text-decoration:none;display:inline-flex;align-items:center;gap:8px;box-shadow:0 4px 14px rgba(26,86,219,.25);transition:all .2s;}
+    .btn-primary:hover{transform:translateY(-1px);}
+    /* Chapter */
+    .ch-header{margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--border);}
+    .ch-label{font-size:11.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--blue);margin-bottom:8px;}
+    .ch-big-title{font-family:'Poppins',sans-serif;font-size:clamp(22px,3vw,30px);font-weight:800;color:var(--navy);line-height:1.2;margin-bottom:14px;}
+    .ch-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;}
+    .ch-meta-item{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+    .ch-illus{width:100%;max-height:360px;object-fit:cover;border-radius:16px;margin-bottom:32px;box-shadow:0 4px 24px rgba(12,31,94,.09);}
+    .story-text{font-family:'Lora',serif;font-size:17px;line-height:2;color:#2d3e5a;}
+    .story-text p{margin-bottom:1.8em;}
+    .story-text p:first-child::first-letter{font-size:3.2em;font-weight:600;float:left;line-height:.75;margin-right:.1em;color:var(--navy);}
+    .ch-footer{margin-top:56px;padding-top:28px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;}
+    .nav-btn{display:flex;align-items:center;gap:8px;padding:12px 20px;border-radius:12px;border:1.5px solid var(--border);background:#fff;font-size:13.5px;font-weight:600;color:var(--text);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .2s;}
+    .nav-btn:hover{border-color:var(--pale);background:#f0f7ff;color:var(--blue);}
+    .nav-btn:disabled{opacity:.35;cursor:not-allowed;}
+    .nav-btn.next{background:linear-gradient(135deg,var(--navy),var(--blue));color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(26,86,219,.25);}
+    .nav-btn.next:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,86,219,.35);}
+    .unpub-bar{background:#fef9c3;border:1.5px solid #fde68a;border-radius:12px;padding:13px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;font-size:13px;color:#a16207;font-weight:500;}
+    /* TOAST */
+    #toast{position:fixed;bottom:24px;right:24px;z-index:9999;border-radius:13px;padding:10px 20px;font-size:13.5px;font-weight:600;box-shadow:0 8px 28px rgba(0,0,0,.12);opacity:0;transform:translateY(16px);transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+    #toast.on{opacity:1;transform:translateY(0);}
+    #toast.green{background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;}
+    #toast.blue{background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;}
+    #toast.red{background:#fee2e2;color:#dc2626;border:1px solid #fecaca;}
+    @media(max-width:900px){.sidebar{display:none;}.reader{margin-left:0;padding:24px 18px;}.prog-bar{left:0;}}
+    @media(max-width:600px){.navbar{padding:0 14px;}.nav-center{display:none;}}
   </style>
 </head>
 <body>
-
-<!-- Page guard: sembunyikan halaman sampai auth dikonfirmasi -->
 <div id="page-guard">
-  <div class="guard-logo">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-      <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
-      <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
-    </svg>
-  </div>
-  <div class="guard-ring"></div>
+  <div class="g-logo"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg></div>
+  <div class="g-ring"></div>
   <p>Aksara</p>
 </div>
-
-
-<!-- NAVBAR -->
 <div class="navbar">
   <a class="nav-back" href="dashboard.html">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
     Kembali
   </a>
   <div class="nav-center">
-    <div class="nav-story-name" id="nav-story-name">Memuat...</div>
-    <div class="nav-chapter-name" id="nav-chapter-name">–</div>
+    <div class="nav-ttl" id="nav-ttl">Memuat…</div>
+    <div class="nav-ch" id="nav-ch">–</div>
   </div>
   <div class="nav-right">
-    <button class="btn-icon" id="btn-like-nav" onclick="toggleLike()" title="Suka">
+    <button class="icon-btn" id="btn-like" onclick="toggleLike()" title="Suka">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
     </button>
-    <button class="btn-icon" id="btn-save-nav" onclick="toggleBookmark()" title="Simpan">
+    <button class="icon-btn" id="btn-bm" onclick="toggleBookmark()" title="Simpan">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+    </button>
+    <button class="icon-btn" onclick="shareStory()" title="Bagikan">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
     </button>
   </div>
 </div>
-
-<div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-
+<div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
 <div class="layout">
-  <!-- LEFT SIDEBAR -->
-  <aside class="story-sidebar" id="story-sidebar">
-    <div id="sidebar-content">
-      <div class="loading-state"><div class="loading-spinner"></div>Memuat...</div>
-    </div>
-  </aside>
-
-  <!-- READER -->
-  <main class="reader" id="reader-main">
-    <div class="reader-inner">
-      <div class="loading-state" id="reader-loading">
-        <div class="loading-spinner"></div>
-        <div>Memuat cerita...</div>
-      </div>
-      <div id="reader-content" style="display:none"></div>
-    </div>
-  </main>
+  <aside class="sidebar" id="sidebar"><div style="flex:1;display:flex;align-items:center;justify-content:center;"><div class="g-ring"></div></div></aside>
+  <main class="reader"><div class="reader-inner" id="reader"><div class="state-box"><div class="g-ring" style="width:40px;height:40px;border-width:4px;"></div></div></div></main>
 </div>
-
 <div id="toast"></div>
 
 <script type="module">
-import { initializeApp }    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, get, set, remove, update, increment }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, set, remove, update, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const firebaseConfig = {
-  apiKey: "AIzaSyCe_fyTzxutF1NhTQ-klHpWIUWlL-DXjsk",
-  authDomain: "watchme-75295.firebaseapp.com",
-  databaseURL: "https://watchme-75295-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "watchme-75295",
-  storageBucket: "watchme-75295.firebasestorage.app",
-  messagingSenderId: "989878198067",
-  appId: "1:989878198067:web:e65a5ca1008f349bf46846",
-  measurementId: "G-40YMPH34F4"
-};
+const cfg={apiKey:"AIzaSyBtbU3Kqn9sobpsamwdyANsYJlZ6dY2vng",authDomain:"finansial-c925d.firebaseapp.com",databaseURL:"https://finansial-c925d-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"finansial-c925d",storageBucket:"finansial-c925d.firebasestorage.app",messagingSenderId:"617456294586",appId:"1:617456294586:web:41b0e172c86899b6c54083"};
+const app=initializeApp(cfg), auth=getAuth(app), db=getDatabase(app);
 
-const app  = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db   = getDatabase(app);
+// ── AMBIL ID dari URL ──
+// Format yang didukung:
+//   baca.html?id=FIREBASE_KEY                  ← langsung
+//   baca.html?id=FIREBASE_KEY&n=judul-slug     ← dengan slug (cantik)
+//   baca.html?n=judul-slug                     ← lookup by slug
+const P=new URLSearchParams(location.search);
+let storyId=P.get('id');
+const slug=P.get('n');
 
-let currentUser = null;
-let story       = null;
-let chapters    = [];
-let activeChIdx = 0;
-let isLiked     = false;
-let isSaved     = false;
+let me=null, story=null, chapters=[], ai=0;
+let isLiked=false, isSaved=false;
 
-const storyId = new URLSearchParams(location.search).get('id');
-if (!storyId) window.location.href = 'dashboard.html';
+const $=id=>document.getElementById(id);
+const toSlug=t=>(t||'').toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìíî]/g,'i').replace(/[òóô]/g,'o').replace(/[ùúû]/g,'u').replace(/[^a-z0-9\s]/g,'').trim().replace(/\s+/g,'-');
+const coverClr=g=>({'Romansa':['#ffe4e6','#fca5a5'],'Fantasi':['#f3e8ff','#c4b5fd'],'Thriller':['#1e293b','#475569'],'Horror':['#0f172a','#1e293b'],'Petualangan':['#ecfdf5','#6ee7b7'],'Drama':['#fef3c7','#fcd34d'],'Komedi':['#fff7ed','#fdba74'],'Misteri':['#1e1b4b','#3730a3'],'Sci-Fi':['#0c4a6e','#0369a1'],'Slice of Life':['#f0fdf4','#86efac']}[g]||['#e8edf5','#bfdbfe']);
+const emoji=g=>({'Romansa':'❤️','Fantasi':'✨','Thriller':'🔪','Horror':'👻','Petualangan':'🏔️','Drama':'🎭','Komedi':'😄','Misteri':'🔍','Sci-Fi':'🚀','Slice of Life':'🌸'}[g]||'📖');
 
-// ── Toast ──
-function toast(msg, type='blue', dur=3000) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.className = 'show ' + type;
-  clearTimeout(t._tid);
-  t._tid = setTimeout(() => { t.className = ''; }, dur);
-}
+function toast(msg,t='blue',d=3000){const el=$('toast');el.textContent=msg;el.className='on '+t;clearTimeout(el._t);el._t=setTimeout(()=>{el.className='';},d);}
 
-// ── Auth ──
-onAuthStateChanged(auth, async user => {
-  const guard = document.getElementById('page-guard');
-  if (!user) {
-    window.location.replace('auth.html');
-    return;
-  }
-  if (guard) guard.style.display = 'none';
-  currentUser = user;
-  await loadData();
+// ── AUTH ──
+onAuthStateChanged(auth, async user=>{
+  if(!user){window.location.replace('auth.html');return;}
+  $('page-guard').style.display='none';
+  me=user;
+  await init();
 });
 
-async function loadData() {
-  try {
-    // Load story
-    const storySnap = await get(ref(db, `stories/${storyId}`));
-    if (!storySnap.exists()) { window.location.href = 'dashboard.html'; return; }
-    story = storySnap.val();
+async function init(){
+  // Cari story ID jika belum ada (lookup by slug)
+  if(!storyId){
+    if(!slug){showErr('❓','URL Tidak Valid','Tidak ada ID cerita.','dashboard.html','Jelajahi Cerita');return;}
+    try{
+      const snap=await get(ref(db,'stories'));
+      if(snap.exists()) snap.forEach(c=>{const s=c.val();if(s.published&&toSlug(s.title)===slug){storyId=s.id;}});
+    }catch(e){}
+    if(!storyId){showErr('🔍','Cerita Tidak Ditemukan',`Tidak ada cerita "${slug}".`,'dashboard.html','Jelajahi Cerita');return;}
+  }
 
-    // Load chapters
-    const chapSnap = await get(ref(db, `stories/${storyId}/chapters`));
-    chapters = [];
-    if (chapSnap.exists()) {
-      chapSnap.forEach(c => chapters.push(c.val()));
-      chapters.sort((a,b) => a.order - b.order);
+  // Real-time listener untuk story metadata
+  onValue(ref(db,`stories/${storyId}`), snap=>{
+    if(!snap.exists()){showErr('🗑️','Cerita Tidak Ditemukan','Cerita ini mungkin sudah dihapus.','dashboard.html','Kembali');return;}
+    const isFirst=!story;
+    story=snap.val();
+
+    // Perbarui URL dengan slug yang cantik
+    const s=toSlug(story.title);
+    history.replaceState(null,'',`baca.html?id=${storyId}&n=${s}`);
+    document.title=`Aksara – ${story.title}`;
+    $('nav-ttl').textContent=story.title;
+
+    if(isFirst){
+      // Pertama kali: muat chapters, cek interaksi, tambah view
+      loadChapters();
+      checkInteractions();
+      update(ref(db,`stories/${storyId}`),{views:(story.views||0)+1}).catch(()=>{});
     }
-
-    // Check like & bookmark
-    const likeSnap = await get(ref(db, `users/${currentUser.uid}/likes/${storyId}`));
-    const savSnap  = await get(ref(db, `users/${currentUser.uid}/bookmarks/${storyId}`));
-    isLiked = likeSnap.exists();
-    isSaved = savSnap.exists();
-
-    // Increment views
-    await update(ref(db, `stories/${storyId}`), { views: (story.views||0) + 1 });
-
-    // Update nav
-    document.getElementById('nav-story-name').textContent = story.title;
-    document.title = `Aksara – ${story.title}`;
-
     renderSidebar();
-    updateActionButtons();
+  });
+}
 
-    if (chapters.length > 0) {
-      loadChapter(0);
-    } else {
-      document.getElementById('reader-loading').style.display = 'none';
-      document.getElementById('reader-content').style.display = 'block';
-      document.getElementById('reader-content').innerHTML = `
-        <div class="pick-chapter">
-          <div class="pick-icon">📭</div>
-          <div class="pick-title">Belum Ada Bab</div>
-          <div class="pick-sub">Penulis belum menambahkan bab untuk cerita ini.</div>
-        </div>`;
+function loadChapters(){
+  // ═══ KUNCI FIX ═══
+  // Chapter disimpan di: chapters/{storyId}/{chId}
+  // BUKAN di: stories/{storyId}/chapters/{chId}
+  onValue(ref(db,`chapters/${storyId}`), snap=>{
+    const wasEmpty=chapters.length===0;
+    chapters=[];
+    if(snap.exists()){
+      snap.forEach(c=>chapters.push(c.val()));
+      chapters.sort((a,b)=>a.order-b.order);
     }
-  } catch(e) { console.error(e); }
+    renderSidebar();
+    if(wasEmpty) showChapter(0);  // Tampilkan bab pertama
+    else showChapter(ai);          // Refresh bab yang sedang dibaca
+  });
 }
 
-function coverColors(genre) {
-  const map = { 'Romansa':['#ffe4e6','#fca5a5'],'Fantasi':['#f3e8ff','#c4b5fd'],'Thriller':['#1e293b','#334155'],'Horror':['#0f172a','#1e293b'],'Petualangan':['#ecfdf5','#6ee7b7'],'Drama':['#fef3c7','#fcd34d'],'Komedi':['#fff7ed','#fdba74'],'Misteri':['#1e1b4b','#3730a3'],'Sci-Fi':['#0c4a6e','#0369a1'],'Slice of Life':['#f0fdf4','#86efac'] };
-  return map[genre] || ['#e8edf5','#bfdbfe'];
-}
-function genreEmoji(genre) {
-  const m = {'Romansa':'❤️','Fantasi':'✨','Thriller':'🔪','Horror':'👻','Petualangan':'🏔️','Drama':'🎭','Komedi':'😄','Misteri':'🔍','Sci-Fi':'🚀','Slice of Life':'🌸'};
-  return m[genre] || '📖';
+async function checkInteractions(){
+  const [l,b]=await Promise.all([
+    get(ref(db,`users/${me.uid}/likes/${storyId}`)),
+    get(ref(db,`users/${me.uid}/bookmarks/${storyId}`))
+  ]);
+  isLiked=l.exists(); isSaved=b.exists();
+  syncBtns();
 }
 
-function renderSidebar() {
-  const [c1,c2] = coverColors(story.genre);
-  const statusMap = { ongoing: ['badge-status-ongoing','Berjalan'], completed: ['badge-status-completed','Selesai'], hiatus: ['badge-status-hiatus','Hiatus'] };
-  const [statCls, statLbl] = statusMap[story.status] || ['badge-status-ongoing','Berjalan'];
-  const likesCount = (story.likes||0) + (isLiked ? 0 : 0);
-
-  document.getElementById('sidebar-content').innerHTML = `
-    <div class="story-cover-wrap">
+function renderSidebar(){
+  if(!story) return;
+  const [c1,c2]=coverClr(story.genre);
+  const sm={ongoing:'bo Berjalan',completed:'bc Selesai',hiatus:'bh Hiatus'}[story.status||'ongoing']||'bo Berjalan';
+  const [sc,sl]=sm.split(' ');
+  $('sidebar').innerHTML=`
+    <div class="sb-cover-area">
       ${story.cover
-        ? `<img class="story-cover-img" src="${story.cover}" alt="${story.title}" onerror="this.style.display='none'">`
-        : `<div class="story-cover-ph" style="background:linear-gradient(135deg,${c1},${c2})">${genreEmoji(story.genre)}</div>`
-      }
-      <div class="story-name">${story.title}</div>
-      <div class="story-author-name">oleh ${story.authorName||'Anonim'}</div>
-      <div class="story-badges">
-        <span class="badge-sm badge-genre">${story.genre||'Umum'}</span>
-        <span class="badge-sm ${statCls}">${statLbl}</span>
-      </div>
+        ?`<img class="sb-cover-img" src="${story.cover}" alt="" onerror="this.style.display='none'">`
+        :`<div class="sb-cover-ph" style="background:linear-gradient(135deg,${c1},${c2})">${emoji(story.genre)}</div>`}
     </div>
-    <div class="story-synopsis-box">${story.synopsis||'Tidak ada sinopsis.'}</div>
-    <div class="story-actions-bar">
-      <button class="btn-action ${isLiked?'liked':''}" id="btn-like-sb" onclick="toggleLike()">
-        ❤️ <span id="like-count-sb">${story.likes||0}</span>
-      </button>
-      <button class="btn-action ${isSaved?'saved':''}" id="btn-save-sb" onclick="toggleBookmark()">
-        🔖 ${isSaved ? 'Tersimpan' : 'Simpan'}
-      </button>
+    <div class="sb-title">${story.title}</div>
+    <div class="sb-author">oleh ${story.authorName||'Anonim'}</div>
+    <div class="sb-badges">
+      <span class="badge bg">${story.genre||'Umum'}</span>
+      <span class="badge ${sc}">${sl}</span>
     </div>
-    <div class="chapter-nav-label">Daftar Bab · ${chapters.length} bab</div>
-    <div id="chapter-nav-list">
-      ${chapters.map((ch, i) => `
-        <div class="chapter-nav-item ${i===activeChIdx?'active':''}" id="chnav-${i}" onclick="loadChapter(${i})">
-          <span class="ch-nav-num">${i+1}</span>
-          <span class="ch-nav-title">${ch.title||'Tanpa Judul'}</span>
-        </div>`).join('')}
+    <div class="sb-syn">${story.synopsis||'Tidak ada sinopsis.'}</div>
+    <div class="sb-act">
+      <button class="act ${isLiked?'liked':''}" onclick="toggleLike()">❤️ <span id="lc">${story.likes||0}</span></button>
+      <button class="act ${isSaved?'saved':''}" onclick="toggleBookmark()">🔖 ${isSaved?'Tersimpan':'Simpan'}</button>
+    </div>
+    <div class="sb-div"></div>
+    <div class="sb-ch-label">Daftar Bab · ${chapters.length} bab</div>
+    <div class="sb-ch-list">
+      ${chapters.length===0
+        ?`<div style="font-size:12.5px;color:var(--muted);text-align:center;padding:16px;">Belum ada bab.</div>`
+        :chapters.map((ch,i)=>`
+          <div class="sb-ch-item ${i===ai?'active':''}" onclick="showChapter(${i})">
+            <span class="sb-ch-n">${i+1}</span>
+            <span class="sb-ch-t">${ch.title||'Tanpa Judul'}</span>
+          </div>`).join('')}
     </div>`;
 }
 
-window.loadChapter = (idx) => {
-  if (idx < 0 || idx >= chapters.length) return;
-  activeChIdx = idx;
-  const ch = chapters[idx];
+window.showChapter=function(idx){
+  if(!story||chapters.length===0) return;
+  if(idx<0||idx>=chapters.length){
+    // Tidak ada chapter
+    $('reader').innerHTML=`
+      <div class="state-box">
+        <div class="state-icon">📭</div>
+        <div class="state-title">Belum Ada Bab</div>
+        <div class="state-sub">Penulis belum menambahkan bab untuk cerita ini. Cek kembali nanti!</div>
+        <a href="dashboard.html" class="btn-primary">← Kembali</a>
+      </div>`;
+    return;
+  }
+  ai=idx;
+  const ch=chapters[idx];
+  $('nav-ch').textContent=`Bab ${idx+1}: ${ch.title}`;
 
-  // Update chapter nav highlight
-  document.querySelectorAll('.chapter-nav-item').forEach((el,i) => el.classList.toggle('active', i===idx));
+  // Update sidebar active
+  document.querySelectorAll('.sb-ch-item').forEach((el,i)=>el.classList.toggle('active',i===idx));
 
-  // Update nav
-  document.getElementById('nav-chapter-name').textContent = `Bab ${idx+1}: ${ch.title}`;
+  const hasN=idx<chapters.length-1;
+  const hasP=idx>0;
+  const words=(ch.content||'').trim().split(/\s+/).filter(Boolean).length;
+  const mins=Math.max(1,Math.ceil(words/200));
+  const paras=(ch.content||'').split(/\n\n+|\n/).filter(p=>p.trim()).map(p=>`<p>${p.trim()}</p>`).join('');
 
-  // Format content: split by newlines → paragraphs
-  const paragraphs = (ch.content||'').split(/\n{2,}|\n/).filter(p => p.trim()).map(p => `<p>${p.trim()}</p>`).join('');
-
-  const hasNext = idx < chapters.length - 1;
-  const hasPrev = idx > 0;
-
-  document.getElementById('reader-loading').style.display = 'none';
-  document.getElementById('reader-content').style.display = 'block';
-  document.getElementById('reader-content').innerHTML = `
-    <div class="chapter-header">
-      <div class="chapter-num-label">Bab ${idx+1} dari ${chapters.length}</div>
-      <h1 class="chapter-big-title">${ch.title||'Tanpa Judul'}</h1>
-      <div class="chapter-meta-row">
-        <span class="chapter-meta-item">
+  $('reader').innerHTML=`
+    ${!story.published?`<div class="unpub-bar"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Cerita ini masih <strong>Draft</strong> – hanya penulis yang bisa melihatnya.</div>`:''}
+    <div class="ch-header">
+      <div class="ch-label">Bab ${idx+1} dari ${chapters.length}</div>
+      <h1 class="ch-big-title">${ch.title||'Tanpa Judul'}</h1>
+      <div class="ch-meta">
+        <span class="ch-meta-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          ${estimateReadTime(ch.content)} menit baca
+          ${mins} menit baca
         </span>
-        <span class="chapter-meta-item">
+        <span class="ch-meta-item">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-          ${countWords(ch.content)} kata
+          ${words.toLocaleString('id')} kata
         </span>
       </div>
     </div>
-
-    ${ch.illustration ? `<img class="chapter-illustration" src="${ch.illustration}" alt="ilustrasi ${ch.title}" onerror="this.style.display='none'">` : ''}
-
-    <div class="story-text">${paragraphs}</div>
-
-    <div class="chapter-footer">
-      <button class="btn-ch-nav" onclick="loadChapter(${idx-1})" ${!hasPrev?'disabled':''}>
+    ${ch.illustration?`<img class="ch-illus" src="${ch.illustration}" alt="" onerror="this.style.display='none'">`:''}
+    <div class="story-text">${paras||'<p><em>Konten bab ini kosong.</em></p>'}</div>
+    <div class="ch-footer">
+      <button class="nav-btn" onclick="showChapter(${idx-1})" ${!hasP?'disabled':''}>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-        ${hasPrev ? `Bab ${idx}: ${chapters[idx-1].title}` : 'Bab Pertama'}
+        ${hasP?`Bab ${idx}:`:''}${hasP?chapters[idx-1].title:'Bab Pertama'}
       </button>
-      ${!hasNext ? `
-        <div style="text-align:center;">
-          <div style="font-size:13.5px;font-weight:700;color:var(--navy);margin-bottom:4px;">🎉 Selesai!</div>
-          <div style="font-size:12.5px;color:var(--muted);">Kamu sudah membaca semua bab</div>
-        </div>` : ''}
-      <button class="btn-ch-nav primary" onclick="loadChapter(${idx+1})" ${!hasNext?'disabled style="opacity:.4"':''}>
-        ${hasNext ? `Bab ${idx+2}: ${chapters[idx+1].title}` : 'Tamat'}
+      ${!hasN?`<div style="text-align:center"><div style="font-size:15px;font-weight:700;color:var(--navy);">🎉 Tamat!</div><div style="font-size:12px;color:var(--muted);margin-top:3px;">Kamu sudah selesai membaca</div></div>`:''}
+      <button class="nav-btn${hasN?' next':''}" onclick="showChapter(${idx+1})" ${!hasN?'disabled':''}>
+        ${hasN?`Bab ${idx+2}: ${chapters[idx+1].title}`:'Selesai'}
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
       </button>
     </div>`;
 
-  // Scroll to top of reader
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+  window.scrollTo({top:0,behavior:'smooth'});
 };
 
-// ── Helpers ──
-function countWords(text) {
-  return text?.trim().split(/\s+/).length || 0;
-}
-function estimateReadTime(text) {
-  return Math.max(1, Math.ceil(countWords(text) / 200));
-}
-
-// ── Like ──
-window.toggleLike = async () => {
-  try {
-    const likeRef  = ref(db, `users/${currentUser.uid}/likes/${storyId}`);
-    const storyRef = ref(db, `stories/${storyId}/likes`);
-    if (isLiked) {
-      await remove(likeRef);
-      await update(ref(db, `stories/${storyId}`), { likes: Math.max(0, (story.likes||1) - 1) });
-      story.likes = Math.max(0, (story.likes||1) - 1);
-      isLiked = false;
-      toast('Batal disukai', 'blue');
-    } else {
-      await set(likeRef, true);
-      await update(ref(db, `stories/${storyId}`), { likes: (story.likes||0) + 1 });
-      story.likes = (story.likes||0) + 1;
-      isLiked = true;
-      toast('❤️ Disukai!', 'blue');
-    }
-    updateActionButtons();
-    const likeEl = document.getElementById('like-count-sb');
-    if (likeEl) likeEl.textContent = story.likes;
-  } catch(e) { toast('Gagal', 'red'); }
+window.toggleLike=async()=>{
+  try{
+    const r=ref(db,`users/${me.uid}/likes/${storyId}`);
+    if(isLiked){await remove(r);await update(ref(db,`stories/${storyId}`),{likes:Math.max(0,(story.likes||1)-1)});isLiked=false;toast('Batal disukai','blue');}
+    else{await set(r,true);await update(ref(db,`stories/${storyId}`),{likes:(story.likes||0)+1});isLiked=true;toast('❤️ Disukai!','blue');}
+    syncBtns();
+  }catch(e){toast('Gagal','red');}
+};
+window.toggleBookmark=async()=>{
+  try{
+    const r=ref(db,`users/${me.uid}/bookmarks/${storyId}`);
+    if(isSaved){await remove(r);isSaved=false;toast('Dihapus dari simpanan','blue');}
+    else{await set(r,true);isSaved=true;toast('🔖 Tersimpan ke perpustakaan!','blue');}
+    syncBtns(); renderSidebar();
+  }catch(e){toast('Gagal','red');}
+};
+window.shareStory=()=>{
+  const url=`${location.origin}${location.pathname}?id=${storyId}&n=${toSlug(story?.title||'')}`;
+  if(navigator.share) navigator.share({title:story?.title,text:`Baca "${story?.title}" di Aksara!`,url}).catch(()=>{});
+  else navigator.clipboard.writeText(url).then(()=>toast('🔗 Link disalin ke clipboard!','blue')).catch(()=>toast('Link: '+url,'blue',6000));
 };
 
-// ── Bookmark ──
-window.toggleBookmark = async () => {
-  try {
-    const bmRef = ref(db, `users/${currentUser.uid}/bookmarks/${storyId}`);
-    if (isSaved) {
-      await remove(bmRef);
-      isSaved = false;
-      toast('Dihapus dari simpanan', 'blue');
-    } else {
-      await set(bmRef, true);
-      isSaved = true;
-      toast('🔖 Disimpan ke perpustakaan!', 'blue');
-    }
-    updateActionButtons();
-    const sbBtn = document.getElementById('btn-save-sb');
-    if (sbBtn) { sbBtn.className = 'btn-action ' + (isSaved?'saved':''); sbBtn.innerHTML = `🔖 ${isSaved?'Tersimpan':'Simpan'}`; }
-    const likeBtn = document.getElementById('btn-like-sb');
-    if (likeBtn) { likeBtn.className = 'btn-action ' + (isLiked?'liked':''); }
-  } catch(e) { toast('Gagal', 'red'); }
-};
-
-function updateActionButtons() {
-  document.getElementById('btn-like-nav').className = 'btn-icon' + (isLiked?' active':'');
-  document.getElementById('btn-save-nav').className = 'btn-icon' + (isSaved?' active':'');
+function syncBtns(){
+  $('btn-like').className='icon-btn'+(isLiked?' liked':'');
+  $('btn-bm').className='icon-btn'+(isSaved?' saved':'');
+  const lc=$('lc'); if(lc) lc.textContent=story?.likes||0;
 }
 
-// ── Reading progress ──
-window.addEventListener('scroll', () => {
-  const el = document.getElementById('reader-content');
-  if (!el) return;
-  const total = el.offsetHeight;
-  const scrolled = window.scrollY;
-  const viewH = window.innerHeight;
-  const pct = Math.min(100, (scrolled / (total - viewH + 64)) * 100);
-  document.getElementById('progress-fill').style.width = pct + '%';
+function showErr(icon,title,sub,href,btn){
+  $('page-guard').style.display='none';
+  $('sidebar').innerHTML='';
+  $('reader').innerHTML=`
+    <div class="state-box">
+      <div class="state-icon">${icon}</div>
+      <div class="state-title">${title}</div>
+      <div class="state-sub">${sub}</div>
+      <a href="${href}" class="btn-primary">${btn}</a>
+    </div>`;
+}
+
+window.addEventListener('scroll',()=>{
+  const r=$('reader');if(!r)return;
+  const pct=Math.min(100,(window.scrollY/Math.max(1,r.offsetHeight-window.innerHeight+64))*100);
+  $('prog').style.width=pct+'%';
 });
 </script>
 </body>
