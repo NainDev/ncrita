@@ -489,14 +489,13 @@ import { getDatabase, ref, get, query, orderByChild, limitToLast, set, remove, u
   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCe_fyTzxutF1NhTQ-klHpWIUWlL-DXjsk",
-  authDomain: "watchme-75295.firebaseapp.com",
-  databaseURL: "https://watchme-75295-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "watchme-75295",
-  storageBucket: "watchme-75295.firebasestorage.app",
-  messagingSenderId: "989878198067",
-  appId: "1:989878198067:web:e65a5ca1008f349bf46846",
-  measurementId: "G-40YMPH34F4"
+  apiKey: "AIzaSyBtbU3Kqn9sobpsamwdyANsYJlZ6dY2vng",
+  authDomain: "finansial-c925d.firebaseapp.com",
+  databaseURL: "https://finansial-c925d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "finansial-c925d",
+  storageBucket: "finansial-c925d.firebasestorage.app",
+  messagingSenderId: "617456294586",
+  appId: "1:617456294586:web:41b0e172c86899b6c54083"
 };
 
 const app  = initializeApp(firebaseConfig);
@@ -656,7 +655,7 @@ function renderJelajahi(main) {
       </div>` : `
     <div class="stories-grid">
       ${filtered.map(s => `
-        <div class="story-card" onclick="baca('${s.id}')">
+        <div class="story-card" onclick="baca('${s.id}','${s.title.replace(/'/g,\"\")}')">
           ${buildCover(s)}
           <div class="story-info">
             <span class="story-genre-tag">${s.genre||'Umum'}</span>
@@ -731,7 +730,7 @@ async function renderTersimpan(main) {
       </div>` : `
     <div class="stories-grid">
       ${saved.map(s => `
-        <div class="story-card" onclick="baca('${s.id}')">
+        <div class="story-card" onclick="baca('${s.id}','${s.title.replace(/'/g,\"\")}')">
           ${buildCover(s)}
           <div class="story-info">
             <span class="story-genre-tag">${s.genre||'Umum'}</span>
@@ -760,8 +759,12 @@ window.handleSearch = (val) => {
   renderTab();
 };
 
-window.baca = (id) => {
-  window.location.href = `baca.html?id=${id}`;
+// Slug helper
+function toSlug(t){ return (t||'').toLowerCase().replace(/[àáâ]/g,'a').replace(/[èéê]/g,'e').replace(/[ìíî]/g,'i').replace(/[òóô]/g,'o').replace(/[ùúû]/g,'u').replace(/[^a-z0-9\s]/g,'').trim().replace(/\s+/g,'-'); }
+
+window.baca = (id, title) => {
+  const slug = toSlug(title||'cerita');
+  window.location.href = `baca.html?id=${id}&n=${slug}`;
 };
 
 window.editStory = (id) => {
